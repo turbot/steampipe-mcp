@@ -2,7 +2,7 @@ import { ListToolsRequestSchema, CallToolRequestSchema } from "@modelcontextprot
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { DatabaseService } from "../services/database.js";
 
-export function setupToolsHandlers(server: Server, db: DatabaseService) {
+export function setupQueryTool(server: Server, db: DatabaseService) {
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
       tools: [

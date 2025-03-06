@@ -3,10 +3,10 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
-import { setupResourceTemplatesHandler } from "./handlers/resourceTemplates.js";
-import { setupResourcesHandler } from "./handlers/resources.js";
-import { setupPromptsHandlers } from "./handlers/prompts.js";
-import { setupToolsHandlers } from "./handlers/tools.js";
+import { setupQueryTool } from "./tools/index.js";
+import { setupResourceHandlers } from "./resources/index.js";
+import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
+import { setupListTablesPrompt } from "./prompts/index.js";
 
 const config = {
   name: "steampipe",
@@ -67,10 +67,10 @@ try {
 }
 
 // Set up handlers
-setupResourceTemplatesHandler(server);
-setupResourcesHandler(server, db);
-setupPromptsHandlers(server);
-setupToolsHandlers(server, db);
+setupQueryTool(server, db);
+setupResourceTemplatesList(server);
+setupResourceHandlers(server, db);
+setupListTablesPrompt(server);
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {

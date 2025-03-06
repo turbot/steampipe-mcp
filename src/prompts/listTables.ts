@@ -2,7 +2,7 @@ import { ListPromptsRequestSchema, GetPromptRequestSchema } from "@modelcontextp
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { PromptName } from "../types/index.js";
 
-export function setupPromptsHandlers(server: Server) {
+export function setupListTablesPrompt(server: Server) {
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
     return {
       prompts: [
