@@ -1,4 +1,4 @@
-# Steampipe MCP
+# Steampipe Model Context Protocol (MCP) Server
 
 A Model Context Protocol server that provides read-only access to Steampipe databases. This server enables LLMs to inspect database schemas and execute read-only queries against your Steampipe installation.
 
@@ -34,7 +34,7 @@ To use this server with the Claude Desktop app, add the following configuration 
       "args": [
         "-y",
         "@turbot/steampipe-mcp",
-        "postgresql://localhost:9193/steampipe"
+        "postgres://localhost:9193/steampipe"
       ]
     }
   }
@@ -57,7 +57,7 @@ When running docker on macOS, use `host.docker.internal` if the Steampipe servic
         "-i", 
         "--rm", 
         "turbot/steampipe-mcp", 
-        "postgresql://host.docker.internal:9193/steampipe"]
+        "postgres://host.docker.internal:9193/steampipe"]
     }
   }
 }
@@ -84,7 +84,7 @@ npm run watch
 
 4. To test locally, ensure Steampipe is running and then:
 ```sh
-node dist/index.js postgresql://localhost:9193/steampipe
+node dist/index.js postgres://localhost:9193/steampipe
 ```
 
 5. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
@@ -95,7 +95,7 @@ node dist/index.js postgresql://localhost:9193/steampipe
       "command": "node",
       "args": [
         "/path/to/your/workspace/dist/index.js",
-        "postgresql://localhost:9193/steampipe"
+        "postgres://localhost:9193/steampipe"
       ]
     }
   }
