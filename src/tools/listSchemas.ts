@@ -13,16 +13,17 @@ export const LIST_SCHEMAS_TOOL = {
 export async function handleListSchemasTool(db: DatabaseService) {
   const rows = await db.executeQuery(`
     select 
-      plugin as "Plugin",
-      connection_name as "Connection",
-      case 
-        when connection_name = plugin then plugin
-        else plugin || '_' || connection_name
-      end as "Schema",
-      type as "Type",
-      config as "Config"
-    from steampipe_connection
-    order by plugin, connection_name
+      plugin,
+      name,
+      state,
+      type,
+      connections,
+      error
+    from
+      steampipe_connection
+    order by
+      plugin,
+      name
   `);
 
   return {
