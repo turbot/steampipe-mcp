@@ -109,6 +109,16 @@ export class DatabaseService {
     }
   }
 
+  async executeWriteQuery(sql: string): Promise<any[]> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(sql);
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  }
+
   async close(): Promise<void> {
     await this.pool.end();
   }
