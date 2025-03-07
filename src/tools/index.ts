@@ -39,13 +39,13 @@ export function setupTools(server: Server, db: DatabaseService) {
         return handleClearCacheTool(db);
 
       case LIST_SCHEMAS_TOOL.name:
-        return handleListSchemasTool(db);
+        return handleListSchemasTool(db, args as { filter?: string });
 
       case LIST_TABLES_TOOL.name:
-        return handleListTablesTool(db, args as { schema: string });
+        return handleListTablesTool(db, args as { schema: string; filter?: string });
 
       case LIST_COLUMNS_TOOL.name:
-        return handleListColumnsTool(db, args as { table: string; schema?: string });
+        return handleListColumnsTool(db, args as { table: string; schema?: string; filter?: string });
 
       default:
         throw new Error(`Unknown tool: ${name}`);

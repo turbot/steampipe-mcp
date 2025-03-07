@@ -14,12 +14,16 @@ export const LIST_COLUMNS_TOOL = {
         type: "string",
         description: "Optional schema name to specify which table to use",
       },
+      filter: {
+        type: "string",
+        description: "Optional SQL ILIKE pattern to filter column names (e.g., 'name%')",
+      },
     },
     required: ["table"],
   },
 } as const;
 
-export async function handleListColumnsTool(db: DatabaseService, args: { table: string; schema?: string }) {
+export async function handleListColumnsTool(db: DatabaseService, args: { table: string; schema?: string; filter?: string }) {
   // If schema is specified, use it directly
   if (args.schema) {
     const rows = await db.executeQuery(`
@@ -37,9 +41,13 @@ export async function handleListColumnsTool(db: DatabaseService, args: { table: 
       where 
         c.table_schema = $1
         and c.table_name = $2
+        and case 
+          when $3::text is not null then c.column_name ilike $3
+          else true
+        end
       order by 
         c.ordinal_position
-    `, [args.schema, args.table]);
+    `, [args.schema, args.table, args.filter || null]);
 
     return {
       content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
@@ -84,9 +92,13 @@ export async function handleListColumnsTool(db: DatabaseService, args: { table: 
         and c.table_name = $1
     where
       s.schema_name = s.first_schema
+      and case 
+        when $2::text is not null then c.column_name ilike $2
+        else true
+      end
     order by 
       c.ordinal_position
-  `, [args.table]);
+  `, [args.table, args.filter || null]);
 
   return {
     content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],

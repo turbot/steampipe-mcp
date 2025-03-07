@@ -6,11 +6,16 @@ export const LIST_SCHEMAS_TOOL = {
   description: "List available Steampipe schemas/connections",
   inputSchema: {
     type: "object",
-    properties: {},
+    properties: {
+      filter: {
+        type: "string",
+        description: "Optional SQL ILIKE pattern to filter schema names (e.g., 'aws%')",
+      },
+    },
   },
 } as const;
 
-export async function handleListSchemasTool(db: DatabaseService) {
+export async function handleListSchemasTool(db: DatabaseService, args?: { filter?: string }) {
   const rows = await db.executeQuery(`
     select 
       plugin,
@@ -21,10 +26,15 @@ export async function handleListSchemasTool(db: DatabaseService) {
       error
     from
       steampipe_connection
+    where
+      case 
+        when $1::text is not null then name ilike $1
+        else true
+      end
     order by
       plugin,
       name
-  `);
+  `, [args?.filter || null]);
 
   return {
     content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],

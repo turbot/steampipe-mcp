@@ -10,12 +10,16 @@ export const LIST_TABLES_TOOL = {
         type: "string",
         description: "The schema name to list tables from",
       },
+      filter: {
+        type: "string",
+        description: "Optional SQL ILIKE pattern to filter table names (e.g., 'aws_iam_%')",
+      },
     },
     required: ["schema"],
   },
 } as const;
 
-export async function handleListTablesTool(db: DatabaseService, args: { schema: string }) {
+export async function handleListTablesTool(db: DatabaseService, args: { schema: string; filter?: string }) {
   const rows = await db.executeQuery(`
     select 
       t.table_name,
@@ -27,9 +31,13 @@ export async function handleListTablesTool(db: DatabaseService, args: { schema: 
       information_schema.tables t
     where 
       t.table_schema = $1
+      and case 
+        when $2::text is not null then t.table_name ilike $2
+        else true
+      end
     order by 
       t.table_name
-  `, [args.schema]);
+  `, [args.schema, args.filter || null]);
 
   return {
     content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
