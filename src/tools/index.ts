@@ -3,9 +3,11 @@ import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { DatabaseService } from "../services/database.js";
 import { QUERY_TOOL, handleQueryTool } from './query.js';
 import { CLEAR_CACHE_TOOL, handleClearCacheTool } from './clearCache.js';
+import { LIST_SCHEMAS_TOOL, handleListSchemasTool } from './listSchemas.js';
 
 export * from './query.js';
 export * from './clearCache.js';
+export * from './listSchemas.js';
 
 export function setupTools(server: Server, db: DatabaseService) {
   // Register tool list handler
@@ -14,6 +16,7 @@ export function setupTools(server: Server, db: DatabaseService) {
       tools: [
         QUERY_TOOL,
         CLEAR_CACHE_TOOL,
+        LIST_SCHEMAS_TOOL,
       ],
     };
   });
@@ -28,6 +31,9 @@ export function setupTools(server: Server, db: DatabaseService) {
 
       case CLEAR_CACHE_TOOL.name:
         return handleClearCacheTool(db);
+
+      case LIST_SCHEMAS_TOOL.name:
+        return handleListSchemasTool(db);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
