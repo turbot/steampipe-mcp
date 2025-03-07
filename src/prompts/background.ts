@@ -47,10 +47,11 @@ export const BACKGROUND_PROMPT = {
    - Bad:  select * from {table_name}
    - Good: select user_name, user_id from {table_name}
 
-5. Use Information Schema
+5. Understanding the schema
    - Never guess table or column names - always query the information schema
+   - Use the list_schemas, list_tables, and list_columns tools to understand the schema
+   - If those are insufficient, query the information_schema directly
    - Never limit results when querying information_schema
-   - Include descriptions from PostgreSQL comments when available
    
    To list available tables in a schema:
    select 
