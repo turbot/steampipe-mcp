@@ -18,16 +18,15 @@ export const LIST_TABLES_TOOL = {
 export async function handleListTablesTool(db: DatabaseService, args: { schema: string }) {
   const rows = await db.executeQuery(`
     select 
-      t.table_name as "Table",
+      t.table_name,
       pg_catalog.obj_description(
         (quote_ident($1) || '.' || quote_ident(t.table_name))::regclass, 
         'pg_class'
-      ) as "Description"
+      ) as description
     from 
       information_schema.tables t
     where 
       t.table_schema = $1
-      and t.table_type = 'BASE TABLE'
     order by 
       t.table_name
   `, [args.schema]);
