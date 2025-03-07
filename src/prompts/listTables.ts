@@ -1,15 +1,23 @@
-import { ListPromptsRequestSchema, GetPromptRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { ListPromptsRequestSchema, GetPromptRequestSchema, Prompt } from "@modelcontextprotocol/sdk/types.js";
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { PromptName } from "../types/index.js";
+
+export const LIST_TABLES_PROMPT = {
+  name: PromptName.LIST_TABLES,
+  description: "Get help with querying Steampipe for a list of available tables",
+  content: [
+    {
+      type: "text",
+      text: "To see all available tables in Steampipe, you can run this SQL query:\n\nSELECT table_schema, table_name\nFROM information_schema.tables\nWHERE table_schema NOT IN ('information_schema', 'pg_catalog');\n\nThis will show you all the tables across all installed plugins. The table_schema typically corresponds to the plugin name (e.g., 'aws', 'github', etc.)."
+    }
+  ]
+} satisfies Prompt;
 
 export function setupListTablesPrompt(server: Server) {
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
     return {
       prompts: [
-        {
-          name: PromptName.LIST_TABLES,
-          description: "Get help with querying Steampipe for a list of available tables",
-        },
+        LIST_TABLES_PROMPT,
       ],
     };
   });
@@ -29,10 +37,7 @@ export function setupListTablesPrompt(server: Server) {
           },
           {
             role: "assistant",
-            content: {
-              type: "text",
-              text: "To see all available tables in Steampipe, you can run this SQL query:\n\nSELECT table_schema, table_name\nFROM information_schema.tables\nWHERE table_schema NOT IN ('information_schema', 'pg_catalog');\n\nThis will show you all the tables across all installed plugins. The table_schema typically corresponds to the plugin name (e.g., 'aws', 'github', etc.).",
-            },
+            content: LIST_TABLES_PROMPT.content[0],
           },
         ],
       };

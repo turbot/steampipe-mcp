@@ -6,7 +6,7 @@ import { DatabaseService } from "./services/database.js";
 import { setupTools } from "./tools/index.js";
 import { setupResourceHandlers } from "./resources/index.js";
 import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
-import { setupListTablesPrompt } from "./prompts/index.js";
+import { setupPrompts } from "./prompts/index.js";
 
 const config = {
   name: "steampipe",
@@ -70,7 +70,7 @@ try {
 setupTools(server, db);
 setupResourceTemplatesList(server);
 setupResourceHandlers(server, db);
-setupListTablesPrompt(server);
+setupPrompts(server);
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
