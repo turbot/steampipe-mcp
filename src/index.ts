@@ -3,7 +3,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
-import { setupQueryTool } from "./tools/index.js";
+import { setupTools } from "./tools/index.js";
 import { setupResourceHandlers } from "./resources/index.js";
 import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
 import { setupListTablesPrompt } from "./prompts/index.js";
@@ -30,8 +30,8 @@ const databaseUrl = args[0];
 // Validate database URL
 try {
   const url = new URL(databaseUrl);
-  if (url.protocol !== 'postgres:') {
-    throw new Error('Invalid database URL: must use postgres:// protocol');
+  if (url.protocol !== 'postgres:' && url.protocol !== 'postgresql:') {
+    throw new Error('Invalid database URL: must use postgres:// or postgresql:// protocol');
   }
 } catch (error: unknown) {
   if (error instanceof Error) {
@@ -67,7 +67,7 @@ try {
 }
 
 // Set up handlers
-setupQueryTool(server, db);
+setupTools(server, db);
 setupResourceTemplatesList(server);
 setupResourceHandlers(server, db);
 setupListTablesPrompt(server);
