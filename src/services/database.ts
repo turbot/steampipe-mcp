@@ -93,11 +93,11 @@ export class DatabaseService {
     }
   }
 
-  async executeQuery(sql: string): Promise<any[]> {
+  async executeQuery(sql: string, params?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
       await client.query("BEGIN TRANSACTION READ ONLY");
-      const result = await client.query(sql);
+      const result = await client.query(sql, params);
       return result.rows;
     } finally {
       client
@@ -109,10 +109,10 @@ export class DatabaseService {
     }
   }
 
-  async executeWriteQuery(sql: string): Promise<any[]> {
+  async executeWriteQuery(sql: string, params?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
-      const result = await client.query(sql);
+      const result = await client.query(sql, params);
       return result.rows;
     } finally {
       client.release();
