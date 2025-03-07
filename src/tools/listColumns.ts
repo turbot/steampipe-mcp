@@ -73,8 +73,6 @@ export async function handleListColumnsTool(db: DatabaseService, args: { table: 
     select 
       c.column_name,
       c.data_type,
-      c.is_nullable,
-      c.column_default,
       pg_catalog.col_description(
         (quote_ident(s.first_schema) || '.' || quote_ident($1))::regclass::oid,
         c.ordinal_position
