@@ -1,7 +1,7 @@
 import { DatabaseService } from "../services/database.js";
 
-export const LIST_TABLES_TOOL = {
-  name: "list_tables",
+export const INSPECT_TABLES_TOOL = {
+  name: "inspect_tables",
   description: "List available tables in a specific schema with descriptions",
   inputSchema: {
     type: "object",
@@ -19,7 +19,7 @@ export const LIST_TABLES_TOOL = {
   },
 } as const;
 
-export async function handleListTablesTool(db: DatabaseService, args: { schema: string; filter?: string }) {
+export async function handleInspectTablesTool(db: DatabaseService, args: { schema: string; filter?: string }) {
   const rows = await db.executeQuery(`
     select 
       t.table_name,

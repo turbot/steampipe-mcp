@@ -1,8 +1,8 @@
 import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 import { DatabaseService } from "../services/database.js";
 
-export const LIST_SCHEMAS_TOOL = {
-  name: "list_schemas",
+export const INSPECT_SCHEMAS_TOOL = {
+  name: "inspect_schemas",
   description: "List available Steampipe schemas/connections",
   inputSchema: {
     type: "object",
@@ -15,7 +15,7 @@ export const LIST_SCHEMAS_TOOL = {
   },
 } as const;
 
-export async function handleListSchemasTool(db: DatabaseService, args?: { filter?: string }) {
+export async function handleInspectSchemasTool(db: DatabaseService, args?: { filter?: string }) {
   const rows = await db.executeQuery(`
     select 
       plugin,

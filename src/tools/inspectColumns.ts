@@ -1,7 +1,7 @@
 import { DatabaseService } from "../services/database.js";
 
-export const LIST_COLUMNS_TOOL = {
-  name: "list_columns",
+export const INSPECT_COLUMNS_TOOL = {
+  name: "inspect_columns",
   description: "List columns for a specific table, optionally filtered by schema",
   inputSchema: {
     type: "object",
@@ -23,7 +23,7 @@ export const LIST_COLUMNS_TOOL = {
   },
 } as const;
 
-export async function handleListColumnsTool(db: DatabaseService, args: { table: string; schema?: string; filter?: string }) {
+export async function handleInspectColumnsTool(db: DatabaseService, args: { table: string; schema?: string; filter?: string }) {
   // If schema is specified, use it directly
   if (args.schema) {
     const rows = await db.executeQuery(`
