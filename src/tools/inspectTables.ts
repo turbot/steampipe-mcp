@@ -12,7 +12,7 @@ export const INSPECT_TABLES_TOOL = {
       },
       filter: {
         type: "string",
-        description: "Optional SQL ILIKE pattern to filter table names (e.g., 'aws_iam_%')",
+        description: "Optional SQL ILIKE pattern to filter table names (e.g., '%aws_iam_%')",
       },
     },
     required: ["schema"],

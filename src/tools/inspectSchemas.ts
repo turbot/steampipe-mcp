@@ -9,7 +9,7 @@ export const INSPECT_SCHEMAS_TOOL = {
     properties: {
       filter: {
         type: "string",
-        description: "Optional SQL ILIKE pattern to filter schema names (e.g., 'aws%')",
+        description: "Optional SQL ILIKE pattern to filter schema names (e.g., '%aws%')",
       },
     },
   },

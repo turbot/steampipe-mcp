@@ -16,7 +16,7 @@ export const INSPECT_COLUMNS_TOOL = {
       },
       filter: {
         type: "string",
-        description: "Optional SQL ILIKE pattern to filter column names (e.g., 'name%')",
+        description: "Optional SQL ILIKE pattern to filter column names (e.g., '%name%')",
       },
     },
     required: ["table"],
