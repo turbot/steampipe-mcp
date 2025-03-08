@@ -8,6 +8,8 @@ import { setupResourceHandlers } from "./resources/index.js";
 import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
 import { setupPrompts } from "./prompts/index.js";
 
+const DEFAULT_DATABASE_URL = "postgres://steampipe@localhost:9193/steampipe";
+
 const config = {
   name: "steampipe",
   version: "0.1.0",
@@ -20,12 +22,7 @@ const config = {
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-if (args.length === 0) {
-  console.error("Please provide a database URL as a command-line argument");
-  process.exit(1);
-}
-
-const databaseUrl = args[0];
+const databaseUrl = args[0] || DEFAULT_DATABASE_URL;
 
 // Validate database URL
 try {
