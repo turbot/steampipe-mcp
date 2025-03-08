@@ -5,8 +5,16 @@ export class DatabaseService {
   private pool: pg.Pool;
 
   constructor(databaseUrl: string) {
+    // Parse the URL to check if it's a Turbot Pipes URL
+    const url = new URL(databaseUrl);
+    const isTurbotPipes = url.hostname.endsWith('.steampipe.cloud');
+
     this.pool = new pg.Pool({
       connectionString: databaseUrl,
+      // Enable SSL for Turbot Pipes or if explicitly requested in URL params
+      ssl: isTurbotPipes || url.searchParams.has('sslmode') ? {
+        rejectUnauthorized: true,
+      } : undefined,
     });
   }
 
