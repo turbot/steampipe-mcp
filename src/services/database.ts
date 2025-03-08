@@ -5,16 +5,28 @@ export class DatabaseService {
   private pool: pg.Pool;
 
   constructor(databaseUrl: string) {
-    // Parse the URL to check if it's a Turbot Pipes URL
-    const url = new URL(databaseUrl);
-    const isTurbotPipes = url.hostname.endsWith('.steampipe.cloud');
-
+    // Try to connect with the most secure options first
     this.pool = new pg.Pool({
       connectionString: databaseUrl,
-      // Enable SSL for Turbot Pipes or if explicitly requested in URL params
-      ssl: isTurbotPipes || url.searchParams.has('sslmode') ? {
+      // Default to most secure options
+      ssl: {
         rejectUnauthorized: true,
-      } : undefined,
+      },
+      // Enable SCRAM authentication
+      password: new URL(databaseUrl).password,
+    });
+
+    // Add error handler to attempt fallback connections
+    this.pool.on('error', async (err) => {
+      if (err.message.includes('SSL')) {
+        console.warn('SSL connection failed, attempting non-SSL connection...');
+        // Close the existing pool
+        await this.pool.end();
+        // Retry without SSL
+        this.pool = new pg.Pool({
+          connectionString: databaseUrl,
+        });
+      }
     });
   }
 
