@@ -5,28 +5,14 @@ export class DatabaseService {
   private pool: pg.Pool;
 
   constructor(databaseUrl: string) {
-    // Try to connect with the most secure options first
+    const url = new URL(databaseUrl);
+
+    // Create the connection pool with SSL enabled but accepting self-signed certificates
     this.pool = new pg.Pool({
       connectionString: databaseUrl,
-      // Default to most secure options
-      ssl: {
-        rejectUnauthorized: true,
-      },
-      // Enable SCRAM authentication
-      password: new URL(databaseUrl).password,
-    });
-
-    // Add error handler to attempt fallback connections
-    this.pool.on('error', async (err) => {
-      if (err.message.includes('SSL')) {
-        console.warn('SSL connection failed, attempting non-SSL connection...');
-        // Close the existing pool
-        await this.pool.end();
-        // Retry without SSL
-        this.pool = new pg.Pool({
-          connectionString: databaseUrl,
-        });
-      }
+      ssl: { rejectUnauthorized: false },
+      // Enable SCRAM authentication if password is provided
+      password: url.password || undefined,
     });
   }
 
