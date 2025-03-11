@@ -20,7 +20,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.0.1",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "@types/node": "^20.11.5",
     "pg": "^8.13.0"
   },
   "devDependencies": {
