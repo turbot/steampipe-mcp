@@ -4,8 +4,6 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
 import { setupTools } from "./tools/index.js";
-import { setupResourceHandlers } from "./resources/index.js";
-import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
 import { setupPrompts } from "./prompts/index.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://steampipe@localhost:9193/steampipe";
@@ -51,7 +49,6 @@ const server = new Server(
   {
     capabilities: {
       prompts: {},
-      resources: {},
       tools: {},
     },
   },
@@ -59,8 +56,6 @@ const server = new Server(
 
 // Set up handlers
 setupTools(server, db);
-setupResourceTemplatesList(server);
-setupResourceHandlers(server, db);
 setupPrompts(server);
 
 // Handle graceful shutdown
