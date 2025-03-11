@@ -65,25 +65,22 @@ setupPrompts(server);
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
-  console.error('Received SIGTERM. Performing graceful shutdown...');
   await db.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.error('Received SIGINT. Performing graceful shutdown...');
   await db.close();
   process.exit(0);
 });
 
 // Start the server
-const transport = new StdioServerTransport();
-server.connect(transport).catch(async (error: unknown) => {
-  if (error instanceof Error) {
-    console.error("Failed to start server:", error.message);
-  } else {
-    console.error("Failed to start server:", error);
-  }
-  await db.close();
-  process.exit(1);
+async function runServer() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
+
+runServer().catch((error) => {
+  console.error("Server error:", error);
+  db.close().finally(() => process.exit(1));
 });

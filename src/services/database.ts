@@ -4,16 +4,28 @@ import { SchemaInfo, TableInfo } from "../types/index.js";
 export class DatabaseService {
   private pool: pg.Pool;
 
-  constructor(databaseUrl: string) {
-    const url = new URL(databaseUrl);
+  constructor(connectionString: string) {
+    const url = new URL(connectionString);
+    
+    const config: pg.PoolConfig = {
+      connectionString,
+      ssl: undefined,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    };
 
-    // Create the connection pool with SSL enabled but accepting self-signed certificates
-    this.pool = new pg.Pool({
-      connectionString: databaseUrl,
-      ssl: { rejectUnauthorized: false },
-      // Enable SCRAM authentication if password is provided
-      password: url.password || undefined,
-    });
+    // Configure SSL based on the URL
+    if (url.hostname.endsWith('.steampipe.cloud')) {
+      config.ssl = { rejectUnauthorized: true };
+    } else if (url.searchParams.has('sslmode')) {
+      const sslMode = url.searchParams.get('sslmode');
+      if (sslMode === 'require' || sslMode === 'verify-full') {
+        config.ssl = { rejectUnauthorized: true };
+      }
+    }
+
+    this.pool = new pg.Pool(config);
   }
 
   async getSchemaInfo(schemaName: string): Promise<SchemaInfo> {
@@ -99,27 +111,28 @@ export class DatabaseService {
     }
   }
 
-  async executeQuery(sql: string, params?: any[]): Promise<any[]> {
+  async executeQuery(query: string, params?: any[]): Promise<any> {
     const client = await this.pool.connect();
     try {
-      await client.query("BEGIN TRANSACTION READ ONLY");
-      const result = await client.query(sql, params);
-      return result.rows;
+      await client.query('BEGIN READ ONLY');
+      const result = await client.query(query, params);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      if (client) {
+        await client.query('ROLLBACK').catch(() => {});
+      }
+      throw error;
     } finally {
-      client
-        .query("ROLLBACK")
-        .catch((error) =>
-          console.warn("Could not roll back transaction:", error),
-        );
       client.release();
     }
   }
 
-  async executeWriteQuery(sql: string, params?: any[]): Promise<any[]> {
+  async executeWriteQuery(query: string, params?: any[]): Promise<any> {
     const client = await this.pool.connect();
     try {
-      const result = await client.query(sql, params);
-      return result.rows;
+      const result = await client.query(query, params);
+      return result;
     } finally {
       client.release();
     }
