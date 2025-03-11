@@ -1,6 +1,19 @@
 # Steampipe Model Context Protocol (MCP) Server
 
-A Model Context Protocol server that provides read-only access to Steampipe databases. This server enables LLMs to inspect database schemas and execute read-only queries against your Steampipe installation.
+Enable AI assistants like Claude to explore and query your Steampipe data! This Model Context Protocol (MCP) server lets AI tools:
+
+- Browse your Steampipe schemas and tables
+- Understand your data structure and relationships
+- Run read-only SQL queries against your data
+- Provide insights and analysis based on your infrastructure data
+
+Perfect for:
+- Getting AI help analyzing your cloud infrastructure
+- Letting AI explore your compliance and security data
+- Having AI assist with Steampipe query development
+- Enabling natural language interactions with your Steampipe data
+
+All queries are read-only and executed through Steampipe's existing security controls.
 
 ## Components
 
