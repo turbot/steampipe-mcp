@@ -119,6 +119,20 @@ The MCP Inspector is helpful for testing and debugging. To test your local devel
 npx @modelcontextprotocol/inspector dist/index.js
 ```
 
+## Open Source & Contributing
+
+This repository is published under the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) (source code) and [CC BY-NC-ND](https://creativecommons.org/licenses/by-nc-nd/2.0/) (docs) licenses. Please see our [code of conduct](https://github.com/turbot/.github/blob/main/CODE_OF_CONDUCT.md). We look forward to collaborating with you!
+
+[Steampipe](https://steampipe.io) is a product produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). It is distributed under our commercial terms. Others are allowed to make their own distribution of the software, but cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
+
+## Get Involved
+
+**[Join #steampipe on Slack →](https://turbot.com/community/join)**
+
+Want to help but don't know where to start? Pick up one of the `help wanted` issues:
+- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
+- [MCP Server](https://github.com/turbot/steampipe-mcp/labels/help%20wanted)
+
 ## License
 
 This MCP server is licensed under the Apache License 2.0. For more details, please see the LICENSE file in the project repository.
