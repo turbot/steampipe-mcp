@@ -66,7 +66,7 @@ To use this server with the Claude Desktop app, add the following configuration 
       "command": "npx",
       "args": [
         "-y",
-        "@turbot/steampipe-mcp",
+        "github:turbot/steampipe-mcp",
         "postgresql://steampipe@localhost:9193/steampipe"
       ]
     }
