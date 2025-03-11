@@ -3,15 +3,15 @@ import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { DatabaseService } from "../services/database.js";
 import { QUERY_TOOL, handleQueryTool } from './query.js';
 import { CLEAR_CACHE_TOOL, handleClearCacheTool } from './clearCache.js';
-import { INSPECT_SCHEMAS_TOOL, handleInspectSchemasTool } from './inspectSchemas.js';
-import { INSPECT_TABLES_TOOL, handleInspectTablesTool } from './inspectTables.js';
-import { INSPECT_COLUMNS_TOOL, handleInspectColumnsTool } from './inspectColumns.js';
+import { INSPECT_DATABASE_TOOL, handleInspectDatabaseTool } from './inspectDatabase.js';
+import { INSPECT_SCHEMA_TOOL, handleInspectSchemaTool } from './inspectSchema.js';
+import { INSPECT_TABLE_TOOL, handleInspectTableTool } from './inspectTable.js';
 
 export * from './query.js';
 export * from './clearCache.js';
-export * from './inspectSchemas.js';
-export * from './inspectTables.js';
-export * from './inspectColumns.js';
+export * from './inspectDatabase.js';
+export * from './inspectSchema.js';
+export * from './inspectTable.js';
 
 export function setupTools(server: Server, db: DatabaseService) {
   // Register tool list handler
@@ -20,9 +20,9 @@ export function setupTools(server: Server, db: DatabaseService) {
       tools: [
         QUERY_TOOL,
         CLEAR_CACHE_TOOL,
-        INSPECT_SCHEMAS_TOOL,
-        INSPECT_TABLES_TOOL,
-        INSPECT_COLUMNS_TOOL,
+        INSPECT_DATABASE_TOOL,
+        INSPECT_SCHEMA_TOOL,
+        INSPECT_TABLE_TOOL,
       ],
     };
   });
@@ -38,14 +38,14 @@ export function setupTools(server: Server, db: DatabaseService) {
       case CLEAR_CACHE_TOOL.name:
         return handleClearCacheTool(db);
 
-      case INSPECT_SCHEMAS_TOOL.name:
-        return handleInspectSchemasTool(db, args as { filter?: string });
+      case INSPECT_DATABASE_TOOL.name:
+        return handleInspectDatabaseTool(db, args as { filter?: string });
 
-      case INSPECT_TABLES_TOOL.name:
-        return handleInspectTablesTool(db, args as { schema: string; filter?: string });
+      case INSPECT_SCHEMA_TOOL.name:
+        return handleInspectSchemaTool(db, args as { name: string; filter?: string });
 
-      case INSPECT_COLUMNS_TOOL.name:
-        return handleInspectColumnsTool(db, args as { table: string; schema?: string; filter?: string });
+      case INSPECT_TABLE_TOOL.name:
+        return handleInspectTableTool(db, args as { name: string; schema?: string });
 
       default:
         throw new Error(`Unknown tool: ${name}`);

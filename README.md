@@ -15,20 +15,19 @@ A Model Context Protocol server that provides read-only access to Steampipe data
   - Clear any cached database information
   - No input parameters required
 
-- **inspect_schemas**
-  - List all available schemas in the database
+- **inspect_database**
+  - List all schemas in the database
   - Optional input: `filter` (string): Filter schemas by name pattern
 
-- **inspect_tables**
-  - List all tables in a specific schema
-  - Input: `schema` (string): The schema to inspect
+- **inspect_schema**
+  - List all tables in a schema
+  - Input: `name` (string): The schema name to inspect
   - Optional input: `filter` (string): Filter tables by name pattern
 
-- **inspect_columns**
-  - List all columns in a specific table
-  - Input: `table` (string): The table to inspect
+- **inspect_table**
+  - Get detailed information about a table including its columns
+  - Input: `name` (string): The name of the table to inspect
   - Optional input: `schema` (string): The schema containing the table
-  - Optional input: `filter` (string): Filter columns by name pattern
 
 ### Resources
 
