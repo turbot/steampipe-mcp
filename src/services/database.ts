@@ -112,13 +112,13 @@ export class DatabaseService {
     }
   }
 
-  private async executeQueryWithTransaction(sql: string, params?: any[], readOnly: boolean = true): Promise<pg.QueryResult> {
+  private async executeQueryWithTransaction(sql: string, params?: any[], readOnly: boolean = true): Promise<any[]> {
     const client = await this.pool.connect();
     try {
       await client.query(readOnly ? "BEGIN TRANSACTION READ ONLY" : "BEGIN TRANSACTION");
       const result = await client.query(sql, params);
       await client.query("COMMIT");
-      return result;
+      return result.rows;
     } catch (error) {
       if (client) {
         await client.query('ROLLBACK').catch(() => {});
@@ -129,11 +129,11 @@ export class DatabaseService {
     }
   }
 
-  async executeQuery(sql: string, params?: any[]): Promise<pg.QueryResult> {
+  async executeQuery(sql: string, params?: any[]): Promise<any[]> {
     return this.executeQueryWithTransaction(sql, params, true);
   }
 
-  async executeWriteQuery(sql: string, params?: any[]): Promise<pg.QueryResult> {
+  async executeWriteQuery(sql: string, params?: any[]): Promise<any[]> {
     return this.executeQueryWithTransaction(sql, params, false);
   }
 
