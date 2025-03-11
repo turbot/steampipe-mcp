@@ -42,6 +42,19 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
   - Input: `name` (string): The name of the table to inspect
   - Optional input: `schema` (string): The schema containing the table
 
+### Prompts
+
+- **background**
+  - Best practices for writing Steampipe SQL queries
+  - Provides detailed guidance on:
+    - Response style and formatting
+    - Using CTEs (WITH clauses) effectively
+    - SQL syntax conventions
+    - Column selection strategies
+    - Schema exploration techniques
+    - Query structure optimization
+    - Performance considerations
+
 ## Usage with Claude Desktop
 
 To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
