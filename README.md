@@ -43,12 +43,6 @@ The server provides schema and table information from the Steampipe database:
     - `schema` - The schema containing the table
     - `name` - The name of the table to query
 
-## Installation
-
-```sh
-npm install -g @turbot/steampipe-mcp
-```
-
 ## Usage with Claude Desktop
 
 To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
@@ -73,26 +67,34 @@ The default Steampipe database runs on port 9193 with username 'steampipe'. Adju
 ## Local Development
 
 To set up the project for local development:
+
+1. Clone the repository and navigate to the directory:
+```sh
+git clone https://github.com/turbot/steampipe-mcp.git
+cd steampipe-mcp
+```
+
+2. Install dependencies:
 ```sh
 npm install
 ```
 
-2. Build the project:
+3. Build the project:
 ```sh
 npm run build
 ```
 
-3. For development with auto-recompilation:
+4. For development with auto-recompilation:
 ```sh
 npm run watch
 ```
 
-4. To test locally, ensure Steampipe is running and then:
+5. To test locally, ensure Steampipe is running and then:
 ```sh
 node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
-5. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
+6. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
