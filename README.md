@@ -34,8 +34,12 @@ To use this server with the Claude Desktop app, add the following configuration 
 {
   "mcpServers": {
     "steampipe": {
-      "command": "steampipe-mcp",
-      "args": ["postgres://localhost:9193/steampipe"]
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp",
+        "postgres://localhost:9193/steampipe"
+      ]
     }
   }
 }
@@ -90,7 +94,7 @@ The MCP Inspector is helpful for testing and debugging. Install it globally and 
 
 ```sh
 npm install -g @modelcontextprotocol/inspector
-mcp-inspector-proxy steampipe-mcp postgres://localhost:9193/steampipe
+mcp-inspector-proxy npx @turbot/steampipe-mcp postgres://localhost:9193/steampipe
 ```
 
 For local development testing:
