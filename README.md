@@ -15,7 +15,7 @@ A Model Context Protocol server that provides read-only access to Steampipe data
 
 The server provides schema information for each table in the Steampipe database:
 
-- **Table Schemas** (`postgresql://<host>/<table>/schema`)
+- **Table Schemas** (`postgresql://<user>@<host>/<table>/schema`)
   - JSON schema information for each table
   - Includes column names and data types
   - Automatically discovered from Steampipe database metadata
@@ -38,14 +38,14 @@ To use this server with the Claude Desktop app, add the following configuration 
       "args": [
         "-y",
         "@turbot/steampipe-mcp",
-        "postgresql://localhost:9193/steampipe"
+        "postgresql://steampipe@localhost:9193/steampipe"
       ]
     }
   }
 }
 ```
 
-The default Steampipe database runs on port 9193. Adjust the connection string if you've configured Steampipe to use a different port or database name.
+The default Steampipe database runs on port 9193 with username 'steampipe'. Adjust the connection string if you've configured Steampipe to use different settings.
 
 ## Local Development
 
@@ -68,7 +68,7 @@ npm run watch
 
 4. To test locally, ensure Steampipe is running and then:
 ```sh
-node dist/index.js postgresql://localhost:9193/steampipe
+node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
 5. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
@@ -79,7 +79,7 @@ node dist/index.js postgresql://localhost:9193/steampipe
       "command": "node",
       "args": [
         "/path/to/your/workspace/dist/index.js",
-        "postgresql://localhost:9193/steampipe"
+        "postgresql://steampipe@localhost:9193/steampipe"
       ]
     }
   }
@@ -94,12 +94,12 @@ The MCP Inspector is helpful for testing and debugging. Install it globally and 
 
 ```sh
 npm install -g @modelcontextprotocol/inspector
-mcp-inspector-proxy npx @turbot/steampipe-mcp postgresql://localhost:9193/steampipe
+mcp-inspector-proxy npx @turbot/steampipe-mcp postgresql://steampipe@localhost:9193/steampipe
 ```
 
 For local development testing:
 ```sh
-mcp-inspector-proxy node dist/index.js postgresql://localhost:9193/steampipe
+mcp-inspector-proxy node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
 ## License
