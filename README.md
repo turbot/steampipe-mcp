@@ -13,7 +13,7 @@ Perfect for:
 - Having AI assist with Steampipe query development
 - Enabling natural language interactions with your Steampipe data
 
-All queries are read-only and executed through Steampipe's existing security controls.
+Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
 
 ## Components
 
