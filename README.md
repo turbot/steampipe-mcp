@@ -104,6 +104,22 @@ node dist/index.js postgres://localhost:9193/steampipe
 
 Replace `/path/to/your/workspace` with the absolute path to your local development directory. For example, if you cloned the repository to `~/src/steampipe-mcp`, you would use `~/src/steampipe-mcp/dist/index.js`.
 
+## Using with MCP Inspector
+
+The MCP Inspector can be used for testing by installing it globally and using it in proxy mode, which allows you to test the MCP server directly:
+
+```sh
+npm install -g @modelcontextprotocol/inspector
+mcp-inspector-proxy <command-to-start-server>
+```
+
+For example:
+```sh
+mcp-inspector-proxy npx @turbot/steampipe-mcp postgres://localhost:9193/steampipe
+```
+
+This approach is more reliable than connecting directly to the server over HTTP.
+
 ## Building
 
 Docker:
