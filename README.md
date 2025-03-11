@@ -42,20 +42,6 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
   - Input: `name` (string): The name of the table to inspect
   - Optional input: `schema` (string): The schema containing the table
 
-### Resources
-
-The server provides schema and table information from the Steampipe database:
-
-- **schema** (`postgresql://schema/{name}`)
-  - Get information about a database schema including its tables
-  - Parameter: `name` - The name of the schema to query
-
-- **table** (`postgresql://table/{schema}/{name}`)
-  - Get information about a table including its column definitions
-  - Parameters:
-    - `schema` - The schema containing the table
-    - `name` - The name of the table to query
-
 ## Usage with Claude Desktop
 
 To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
