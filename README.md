@@ -20,48 +20,28 @@ The server provides schema information for each table in the Steampipe database:
   - Includes column names and data types
   - Automatically discovered from Steampipe database metadata
 
+## Installation
+
+```sh
+npm install -g @turbot/steampipe-mcp
+```
+
 ## Usage with Claude Desktop
 
 To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
-
-### NPX
 
 ```json
 {
   "mcpServers": {
     "steampipe": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@turbot/steampipe-mcp",
-        "postgres://localhost:9193/steampipe"
-      ]
+      "command": "steampipe-mcp",
+      "args": ["postgres://localhost:9193/steampipe"]
     }
   }
 }
 ```
 
 The default Steampipe database runs on port 9193. Adjust the connection string if you've configured Steampipe to use a different port or database name.
-
-### Docker
-
-When running docker on macOS, use `host.docker.internal` if the Steampipe service is running on the host network:
-
-```json
-{
-  "mcpServers": {
-    "steampipe": {
-      "command": "docker",
-      "args": [
-        "run", 
-        "-i", 
-        "--rm", 
-        "turbot/steampipe-mcp", 
-        "postgres://host.docker.internal:9193/steampipe"]
-    }
-  }
-}
-```
 
 ## Local Development
 
@@ -106,26 +86,16 @@ Replace `/path/to/your/workspace` with the absolute path to your local developme
 
 ## Using with MCP Inspector
 
-The MCP Inspector can be used for testing by installing it globally and using it in proxy mode, which allows you to test the MCP server directly:
+The MCP Inspector is helpful for testing and debugging. Install it globally and use it in proxy mode to test the MCP server directly:
 
 ```sh
 npm install -g @modelcontextprotocol/inspector
-mcp-inspector-proxy <command-to-start-server>
+mcp-inspector-proxy steampipe-mcp postgres://localhost:9193/steampipe
 ```
 
-For example:
+For local development testing:
 ```sh
-mcp-inspector-proxy npx @turbot/steampipe-mcp postgres://localhost:9193/steampipe
-```
-
-This approach is more reliable than connecting directly to the server over HTTP.
-
-## Building
-
-Docker:
-
-```sh
-docker build -t turbot/steampipe-mcp . 
+mcp-inspector-proxy node dist/index.js postgres://localhost:9193/steampipe
 ```
 
 ## License
