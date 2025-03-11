@@ -13,7 +13,7 @@ export function setupResourceHandlers(server: Server, db: DatabaseService) {
       || await handleTableResource(uri, db);
 
     if (!result) {
-      throw new Error(`Invalid resource URI: ${uri}. Expected format: postgres://schema/{name} or postgres://table/{schema}/{name}`);
+      throw new Error(`Invalid resource URI: ${uri}. Expected format: postgresql://schema/{name} or postgresql://table/{schema}/{name}`);
     }
 
     return result;

@@ -1,7 +1,7 @@
 import type { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import { DatabaseService } from "../services/database.js";
 
-export const SCHEMA_PATTERN = /^postgres:\/\/schema\/([^\/]+)$/;
+export const SCHEMA_PATTERN = /^postgresql:\/\/schema\/([^\/]+)$/;
 
 export async function handleSchemaResource(uri: string, db: DatabaseService): Promise<ReadResourceResult | undefined> {
   const match = uri.match(SCHEMA_PATTERN);

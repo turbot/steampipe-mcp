@@ -6,7 +6,7 @@ export function setupResourceTemplatesList(server: Server) {
     return {
       resourceTemplates: [
         {
-          uriTemplate: "postgres://schema/{name}",
+          uriTemplate: "postgresql://schema/{name}",
           name: "Schema",
           description: "Get information about a database schema including its tables",
           parameters: [
@@ -17,7 +17,7 @@ export function setupResourceTemplatesList(server: Server) {
           ],
         },
         {
-          uriTemplate: "postgres://table/{schema}/{name}",
+          uriTemplate: "postgresql://table/{schema}/{name}",
           name: "Table",
           description: "Get information about a table including its column definitions",
           parameters: [

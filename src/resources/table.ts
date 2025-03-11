@@ -1,7 +1,7 @@
 import type { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import { DatabaseService } from "../services/database.js";
 
-export const TABLE_PATTERN = /^postgres:\/\/table\/([^\/]+)\/([^\/]+)$/;
+export const TABLE_PATTERN = /^postgresql:\/\/table\/([^\/]+)\/([^\/]+)$/;
 
 export async function handleTableResource(uri: string, db: DatabaseService): Promise<ReadResourceResult | undefined> {
   const match = uri.match(TABLE_PATTERN);

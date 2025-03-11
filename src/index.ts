@@ -8,7 +8,7 @@ import { setupResourceHandlers } from "./resources/index.js";
 import { setupResourceTemplatesList } from "./resourceTemplates/index.js";
 import { setupPrompts } from "./prompts/index.js";
 
-const DEFAULT_DATABASE_URL = "postgres://steampipe@localhost:9193/steampipe";
+const DEFAULT_DATABASE_URL = "postgresql://steampipe@localhost:9193/steampipe";
 
 // Parse command line arguments
 const args = process.argv.slice(2);
