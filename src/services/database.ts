@@ -9,20 +9,21 @@ export class DatabaseService {
     
     const config: pg.PoolConfig = {
       connectionString,
-      ssl: undefined,
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
     };
 
-    // Configure SSL based on the URL
-    if (url.hostname.endsWith('.steampipe.cloud')) {
-      config.ssl = { rejectUnauthorized: true };
-    } else if (url.searchParams.has('sslmode')) {
+    // Configure SSL based on URL parameters or use secure defaults
+    if (url.searchParams.has('sslmode')) {
       const sslMode = url.searchParams.get('sslmode');
-      if (sslMode === 'require' || sslMode === 'verify-full') {
+      if (sslMode === 'require' || sslMode === 'verify-ca' || sslMode === 'verify-full') {
         config.ssl = { rejectUnauthorized: true };
       }
+      // For other modes (disable, allow, prefer), let postgres handle it
+    } else {
+      // Default to prefer with self-signed certs allowed
+      config.ssl = { rejectUnauthorized: false };
     }
 
     this.pool = new pg.Pool(config);
