@@ -111,13 +111,13 @@ export class DatabaseService {
     }
   }
 
-  async executeQuery(query: string, params?: any[]): Promise<any> {
+  async executeQuery(sql: string, params?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
-      await client.query('BEGIN READ ONLY');
-      const result = await client.query(query, params);
-      await client.query('COMMIT');
-      return result;
+      await client.query("BEGIN TRANSACTION READ ONLY");
+      const result = await client.query(sql, params);
+      await client.query("COMMIT");
+      return result.rows;
     } catch (error) {
       if (client) {
         await client.query('ROLLBACK').catch(() => {});
@@ -128,11 +128,11 @@ export class DatabaseService {
     }
   }
 
-  async executeWriteQuery(query: string, params?: any[]): Promise<any> {
+  async executeWriteQuery(sql: string, params?: any[]): Promise<any[]> {
     const client = await this.pool.connect();
     try {
-      const result = await client.query(query, params);
-      return result;
+      const result = await client.query(sql, params);
+      return result.rows;
     } finally {
       client.release();
     }
