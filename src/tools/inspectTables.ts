@@ -2,7 +2,7 @@ import { DatabaseService } from "../services/database.js";
 
 export const INSPECT_TABLES_TOOL = {
   name: "inspect_tables",
-  description: "List available tables in a specific schema with descriptions",
+  description: "List all tables in a specific schema",
   inputSchema: {
     type: "object",
     properties: {

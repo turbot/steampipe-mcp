@@ -3,7 +3,7 @@ import { DatabaseService } from "../services/database.js";
 
 export const INSPECT_SCHEMAS_TOOL = {
   name: "inspect_schemas",
-  description: "List available Steampipe schemas/connections",
+  description: "List all available schemas in the database",
   inputSchema: {
     type: "object",
     properties: {

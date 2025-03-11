@@ -2,22 +2,13 @@ import { DatabaseService } from "../services/database.js";
 
 export const INSPECT_COLUMNS_TOOL = {
   name: "inspect_columns",
-  description: "List columns for a specific table, optionally filtered by schema",
+  description: "List all columns in a specific table",
   inputSchema: {
     type: "object",
     properties: {
-      table: {
-        type: "string",
-        description: "The table name to list columns from",
-      },
-      schema: {
-        type: "string",
-        description: "Optional schema name to specify which table to use",
-      },
-      filter: {
-        type: "string",
-        description: "Optional SQL ILIKE pattern to filter column names (e.g., '%name%')",
-      },
+      table: { type: "string" },
+      schema: { type: "string" },
+      filter: { type: "string" },
     },
     required: ["table"],
   },

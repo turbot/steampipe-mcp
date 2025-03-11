@@ -11,20 +11,20 @@ A Model Context Protocol server that provides read-only access to Steampipe data
   - Input: `sql` (string): The SQL query to execute
   - All queries are executed within a READ ONLY transaction
 
-- **clearCache**
+- **clear_cache**
   - Clear any cached database information
   - No input parameters required
 
-- **inspectSchemas**
+- **inspect_schemas**
   - List all available schemas in the database
   - Optional input: `filter` (string): Filter schemas by name pattern
 
-- **inspectTables**
+- **inspect_tables**
   - List all tables in a specific schema
   - Input: `schema` (string): The schema to inspect
   - Optional input: `filter` (string): Filter tables by name pattern
 
-- **inspectColumns**
+- **inspect_columns**
   - List all columns in a specific table
   - Input: `table` (string): The table to inspect
   - Optional input: `schema` (string): The schema containing the table
@@ -34,11 +34,11 @@ A Model Context Protocol server that provides read-only access to Steampipe data
 
 The server provides schema and table information from the Steampipe database:
 
-- **Schema** (`postgresql://schema/{name}`)
+- **schema** (`postgresql://schema/{name}`)
   - Get information about a database schema including its tables
   - Parameter: `name` - The name of the schema to query
 
-- **Table** (`postgresql://table/{schema}/{name}`)
+- **table** (`postgresql://table/{schema}/{name}`)
   - Get information about a table including its column definitions
   - Parameters:
     - `schema` - The schema containing the table
