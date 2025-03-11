@@ -132,7 +132,3 @@ This repository is published under the [Apache 2.0 license](https://www.apache.o
 Want to help but don't know where to start? Pick up one of the `help wanted` issues:
 - [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
 - [MCP Server](https://github.com/turbot/steampipe-mcp/labels/help%20wanted)
-
-## License
-
-This MCP server is licensed under the Apache License 2.0. For more details, please see the LICENSE file in the project repository.
