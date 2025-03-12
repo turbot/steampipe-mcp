@@ -21,11 +21,11 @@ export function setupTools(server: Server, db: DatabaseService) {
     return {
       tools: [
         QUERY_TOOL,
-        CLEAR_CACHE_TOOL,
+        LIST_TABLES_TOOL,
         INSPECT_DATABASE_TOOL,
         INSPECT_SCHEMA_TOOL,
         INSPECT_TABLE_TOOL,
-        LIST_TABLES_TOOL,
+        CLEAR_CACHE_TOOL,
       ],
     };
   });
