@@ -8,14 +8,19 @@ export function setupResourceHandlers(server: Server, db: DatabaseService) {
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const { uri } = request.params;
 
-    // Try each handler in sequence
-    const result = await handleSchemaResource(uri, db) 
-      || await handleTableResource(uri, db);
+    try {
+      // Try each handler in sequence
+      const result = await handleSchemaResource(uri, db) 
+        || await handleTableResource(uri, db);
 
-    if (!result) {
-      throw new Error(`Invalid resource URI: ${uri}. Expected format: postgresql://schema/{name} or postgresql://table/{schema}/{name}`);
+      if (!result) {
+        throw new Error(`Invalid resource URI: ${uri}. Expected format: postgresql://schema/{name} or postgresql://table/{schema}/{name}`);
+      }
+
+      return result;
+    } catch (error) {
+      // Just wrap the error with the URI context
+      throw new Error(`Failed to access resource ${uri}: ${error instanceof Error ? error.message : String(error)}`);
     }
-
-    return result;
   });
 } 
