@@ -71,6 +71,7 @@ export const BACKGROUND_PROMPT = {
 
 5. Understanding the schema
    - Never guess table or column names - always query the information schema
+   - Use list_tables to discover and filter tables. This is the most efficient way to discover tables.
    - Use inspect_database to get a list of schemas
    - Use inspect_schema to get a list of tables in a schema
    - Use inspect_table to get a list of columns in a table

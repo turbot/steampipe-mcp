@@ -6,12 +6,14 @@ import { CLEAR_CACHE_TOOL, handleClearCacheTool } from './clearCache.js';
 import { INSPECT_DATABASE_TOOL, handleInspectDatabaseTool } from './inspectDatabase.js';
 import { INSPECT_SCHEMA_TOOL, handleInspectSchemaTool } from './inspectSchema.js';
 import { INSPECT_TABLE_TOOL, handleInspectTableTool } from './inspectTable.js';
+import { LIST_TABLES_TOOL, handleListTablesTool } from './listTables.js';
 
 export * from './query.js';
 export * from './clearCache.js';
 export * from './inspectDatabase.js';
 export * from './inspectSchema.js';
 export * from './inspectTable.js';
+export * from './listTables.js';
 
 export function setupTools(server: Server, db: DatabaseService) {
   // Register tool list handler
@@ -23,6 +25,7 @@ export function setupTools(server: Server, db: DatabaseService) {
         INSPECT_DATABASE_TOOL,
         INSPECT_SCHEMA_TOOL,
         INSPECT_TABLE_TOOL,
+        LIST_TABLES_TOOL,
       ],
     };
   });
@@ -46,6 +49,9 @@ export function setupTools(server: Server, db: DatabaseService) {
 
       case INSPECT_TABLE_TOOL.name:
         return handleInspectTableTool(db, args as { name: string; schema?: string });
+
+      case LIST_TABLES_TOOL.name:
+        return handleListTablesTool(db, args as { schema?: string; filter?: string });
 
       default:
         throw new Error(`Unknown tool: ${name}`);
