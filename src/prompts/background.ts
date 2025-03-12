@@ -1,12 +1,18 @@
-import { Prompt } from "@modelcontextprotocol/sdk/types.js";
+import { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 
 export const BACKGROUND_PROMPT = {
   name: "background",
   description: "Best practices for writing Steampipe SQL queries",
-  content: [
-    {
-      type: "text",
-      text: `When writing SQL queries for Steampipe, follow these essential best practices:
+} as const;
+
+export async function handleBackgroundPrompt(): Promise<GetPromptResult> {
+  return {
+    messages: [
+      {
+        role: "user",
+        content: {
+          type: "text",
+          text: `When writing SQL queries for Steampipe, follow these essential best practices:
 
 1. Response Style
    - Always return a markdown table with the results of the query
@@ -117,8 +123,9 @@ export const BACKGROUND_PROMPT = {
 8. Performance Considerations
    - Each column access may trigger an API call
    - Filtering early reduces data transfer
-   - Materialized CTEs cache results for reuse
-;`
-    }
-  ]
-} satisfies Prompt; 
+   - Materialized CTEs cache results for reuse`
+        }
+      }
+    ]
+  };
+} 
