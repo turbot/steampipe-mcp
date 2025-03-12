@@ -43,18 +43,26 @@ try {
 }
 
 // Initialize server
-const server = new Server({
-  name: "steampipe",
-  version: "0.1.0",
-  description: "Steampipe MCP Server",
-  vendor: "Turbot",
-  homepage: "https://github.com/turbot/steampipe-mcp",
-  resources: {
-    read: async (uri: string) => {
-      return handleResource(uri, db);
-    },
+const server = new Server(
+  {
+    name: "steampipe",
+    version: "0.1.0",
+    description: "Exploring and query Steampipe data. Provides tools to browse schemas, inspect tables, and execute read-only SQL queries against your Steampipe database.",
+    vendor: "Turbot",
+    homepage: "https://github.com/turbot/steampipe-mcp",
   },
-});
+  {
+    capabilities: {
+      tools: {},
+      prompts: {},
+      resources: {
+        read: async (uri: string) => {
+          return handleResource(uri, db);
+        },
+      },
+    }
+  }
+);
 
 // Set up handlers
 setupTools(server, db);
