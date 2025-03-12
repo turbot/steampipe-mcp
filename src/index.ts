@@ -5,6 +5,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { DatabaseService } from "./services/database.js";
 import { setupTools } from "./tools/index.js";
 import { setupPrompts } from "./prompts/index.js";
+import { setupResourceTemplatesList } from "./resourceTemplates/list.js";
+import { handleResource } from "./resources/index.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://steampipe@localhost:9193/steampipe";
 
@@ -41,26 +43,23 @@ try {
 }
 
 // Initialize server
-const server = new Server(
-  {
-    name: "steampipe",
-    version: "0.1.0",
-    description: "Exploring and query Steampipe data. Provides tools to browse schemas, inspect tables, and execute read-only SQL queries against your Steampipe database.",
-    vendor: "Turbot HQ, Inc",
-    homepage: "https://github.com/turbot/steampipe-mcp",
-  },
-  {
-    capabilities: {
-      prompts: {},
-      tools: {},
-      resources: {},
+const server = new Server({
+  name: "steampipe",
+  version: "0.1.0",
+  description: "Steampipe MCP Server",
+  vendor: "Turbot",
+  homepage: "https://github.com/turbot/steampipe-mcp",
+  resources: {
+    read: async (uri: string) => {
+      return handleResource(uri, db);
     },
   },
-);
+});
 
 // Set up handlers
 setupTools(server, db);
 setupPrompts(server);
+setupResourceTemplatesList(server);
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
