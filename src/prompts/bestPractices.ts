@@ -1,11 +1,11 @@
 import { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 
-export const BACKGROUND_PROMPT = {
-  name: "background",
+export const BEST_PRACTICES_PROMPT = {
+  name: "best_practices",
   description: "Best practices for writing Steampipe SQL queries",
 } as const;
 
-export async function handleBackgroundPrompt(): Promise<GetPromptResult> {
+export async function handleBestPracticesPrompt(): Promise<GetPromptResult> {
   return {
     messages: [
       {
