@@ -49,7 +49,7 @@ export const BACKGROUND_PROMPT = {
 
 5. Understanding the schema
    - Never guess table or column names - always query the information schema
-   - Use the list_schemas, list_tables, and list_columns tools to understand the schema
+   - Use the inspect_database, inspect_schema, and inspect_table tools to understand the schema
    - If those are insufficient, query the information_schema directly
    - Never limit results when querying information_schema
    
@@ -80,26 +80,28 @@ export const BACKGROUND_PROMPT = {
      AND c.table_name = '{table_name}'
    order by c.ordinal_position;
 
-6. Query Structure
+6. Schema Qualification in Queries
+   - Prefer unqualified table names, trust the search_path order
+   - Only use the schema name in the query if you need to qualify a table name
+
+7. Query Structure
    - Start with the most filtered table in CTEs
    - Use where clauses early to reduce data transfer
    - Consider using LIMIT when exploring data (except for information_schema queries)
 
-7. Performance Considerations
+8. Performance Considerations
    - Each column access may trigger an API call
    - Filtering early reduces data transfer
    - Materialized CTEs cache results for reuse
 
 Example of a well-structured query:
-WITH active_users as materialized (
-  select user_id, user_name, arn
+with active_users as materialized (
+  select user_id, user_name, arn, tags
   from aws_iam_user
-  where tags ->> 'Environment' = 'Production'
 ),
 user_policies as materialized (
   select user_name, policy_name
   from aws_iam_user_policy
-  where policy_name LIKE 'Admin%'
 )
 select 
   u.user_name,
@@ -107,6 +109,9 @@ select
   p.policy_name
 from active_users u
 join user_policies p using (user_name)
+where
+  u.tags ->> 'Environment' = 'Production'
+  and p.policy_name LIKE 'Admin%'
 order by u.user_name;`
     }
   ]
