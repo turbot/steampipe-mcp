@@ -26,8 +26,30 @@ export const BACKGROUND_PROMPT = {
      )
    - Only use CTEs when you need to join data
    - For simple queries, use direct select statements
+   - It's better to avoid where clauses in CTEs and use filters in the outer query
    - Bad:  with users as materialized (select * from {table_name})
    - Good: select user_name, user_id from {table_name}
+   - Example of a well-structured query:
+      \`\`\`sql
+      with active_users as materialized (
+        select user_id, user_name, arn, tags
+        from aws_iam_user
+      ),
+      user_policies as materialized (
+        select user_name, policy_name
+        from aws_iam_user_policy
+      )
+      select 
+        u.user_name,
+        u.arn,
+        p.policy_name
+      from active_users u
+      join user_policies p using (user_name)
+      where
+        u.tags ->> 'Environment' = 'Production'
+        and p.policy_name LIKE 'Admin%'
+      order by u.user_name
+      \`\`\`
 
 3. SQL syntax
    - Indent with 2 spaces
@@ -49,7 +71,9 @@ export const BACKGROUND_PROMPT = {
 
 5. Understanding the schema
    - Never guess table or column names - always query the information schema
-   - Use the inspect_database, inspect_schema, and inspect_table tools to understand the schema
+   - Use inspect_database to get a list of schemas
+   - Use inspect_schema to get a list of tables in a schema
+   - Use inspect_table to get a list of columns in a table
    - If those are insufficient, query the information_schema directly
    - Never limit results when querying information_schema
    
@@ -93,26 +117,7 @@ export const BACKGROUND_PROMPT = {
    - Each column access may trigger an API call
    - Filtering early reduces data transfer
    - Materialized CTEs cache results for reuse
-
-Example of a well-structured query:
-with active_users as materialized (
-  select user_id, user_name, arn, tags
-  from aws_iam_user
-),
-user_policies as materialized (
-  select user_name, policy_name
-  from aws_iam_user_policy
-)
-select 
-  u.user_name,
-  u.arn,
-  p.policy_name
-from active_users u
-join user_policies p using (user_name)
-where
-  u.tags ->> 'Environment' = 'Production'
-  and p.policy_name LIKE 'Admin%'
-order by u.user_name;`
+;`
     }
   ]
 } satisfies Prompt; 
