@@ -45,6 +45,9 @@ const server = new Server(
   {
     name: "steampipe",
     version: "0.1.0",
+    description: "Exploring and query Steampipe data. Provides tools to browse schemas, inspect tables, and execute read-only SQL queries against your Steampipe database.",
+    vendor: "Turbot HQ, Inc",
+    homepage: "https://github.com/turbot/steampipe-mcp",
   },
   {
     capabilities: {
