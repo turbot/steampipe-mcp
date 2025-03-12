@@ -1,14 +1,21 @@
-import type { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
+import { ReadResourceRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { DatabaseService } from "../services/database.js";
-import { handleSchemaResource, SCHEMA_PATTERN } from "./schema.js";
-import { handleTableResource, TABLE_PATTERN } from "./table.js";
+import { handleSchemaResource } from "./schema.js";
+import { handleTableResource } from "./table.js";
 
-export async function handleResource(uri: string, db: DatabaseService): Promise<ReadResourceResult | undefined> {
-  if (uri.match(SCHEMA_PATTERN)) {
-    return handleSchemaResource(uri, db);
-  }
-  if (uri.match(TABLE_PATTERN)) {
-    return handleTableResource(uri, db);
-  }
-  return undefined;
+export function setupResourceHandlers(server: Server, db: DatabaseService) {
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    const { uri } = request.params;
+
+    // Try each handler in sequence
+    const result = await handleSchemaResource(uri, db) 
+      || await handleTableResource(uri, db);
+
+    if (!result) {
+      throw new Error(`Invalid resource URI: ${uri}. Expected format: postgresql://schema/{name} or postgresql://table/{schema}/{name}`);
+    }
+
+    return result;
+  });
 } 

@@ -6,7 +6,7 @@ import { DatabaseService } from "./services/database.js";
 import { setupTools } from "./tools/index.js";
 import { setupPrompts } from "./prompts/index.js";
 import { setupResourceTemplatesList } from "./resourceTemplates/list.js";
-import { handleResource } from "./resources/index.js";
+import { setupResourceHandlers } from "./resources/index.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://steampipe@localhost:9193/steampipe";
 
@@ -55,19 +55,16 @@ const server = new Server(
     capabilities: {
       tools: {},
       prompts: {},
-      resources: {
-        read: async (uri: string) => {
-          return handleResource(uri, db);
-        },
-      },
+      resources: {},
     }
   }
 );
 
 // Set up handlers
 setupTools(server, db);
-setupPrompts(server);
 setupResourceTemplatesList(server);
+setupResourceHandlers(server, db);
+setupPrompts(server);
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
