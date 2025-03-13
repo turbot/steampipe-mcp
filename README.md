@@ -17,6 +17,17 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 
 ## Components
 
+### Prompts
+
+- **best_practices**
+  - Best practices for working with Steampipe data
+  - Provides detailed guidance on:
+    - How to explore available data
+    - When to use specific tables
+    - Query structure and optimization
+    - Response formatting
+    - Performance considerations
+
 ### Tools
 
 - **query**
@@ -24,9 +35,10 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
   - Input: `sql` (string): The SQL query to execute
   - All queries are executed within a READ ONLY transaction
 
-- **clear_cache**
-  - Clear any cached database information
-  - No input parameters required
+- **list_tables**
+  - List available tables in the database
+  - Optional input: `schema` (string): Filter by schema name
+  - Optional input: `filter` (string): Filter tables by name pattern
 
 - **inspect_database**
   - List all schemas in the database
@@ -42,22 +54,31 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
   - Input: `name` (string): The name of the table to inspect
   - Optional input: `schema` (string): The schema containing the table
 
-### Prompts
+- **clear_cache**
+  - Clear any cached database information
+  - No input parameters required
 
-- **background**
-  - Best practices for writing Steampipe SQL queries
-  - Provides detailed guidance on:
-    - Response style and formatting
-    - Using CTEs (WITH clauses) effectively
-    - SQL syntax conventions
-    - Column selection strategies
-    - Schema exploration techniques
-    - Query structure optimization
-    - Performance considerations
+### Resource Templates
 
-## Usage with Claude Desktop
+The Steampipe MCP includes resource templates that define how to interact with different types of resources. Currently supported resource types:
 
-To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
+- **schema**
+  - Represents a Steampipe schema
+  - Properties include name, description, and tables
+
+- **table**
+  - Represents a Steampipe table
+  - Properties include name, description, columns, and relationships
+
+Resource templates enable structured access to Steampipe metadata, making it easier for AI tools to understand and navigate your data.
+
+## Installation
+
+### Claude Desktop
+
+[How to use MCP servers with Claude Desktop →](https://modelcontextprotocol.io/quickstart/user)
+
+Add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
 
 ```json
 {
@@ -74,7 +95,52 @@ To use this server with the Claude Desktop app, add the following configuration 
 }
 ```
 
-The default Steampipe database runs on port 9193 with username 'steampipe'. Adjust the connection string if you've configured Steampipe to use different settings.
+You can use any Steampipe database connection above, the default shown is for a local instance. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) Steampipe database.
+
+## Prompting Guide
+
+### Best Practices
+
+The Steampipe MCP includes a pre-built `best_practices` prompt. Running it before running your own prompts will teach the LLM how to work most effectively with Steampipe, including:
+
+- How to explore available data schemas and tables
+- When to use specific tables for different resource types
+- How to write efficient queries that follow Steampipe conventions
+- Best practices for formatting and presenting results
+
+In Claude Desktop, you can run load this prompt through the plug icon in the prompt window.
+
+### Example Prompts
+
+Each prompt below is designed to work with Steampipe's table structure, where each resource type (buckets, instances, etc.) has its own table.
+
+```
+List 10 S3 buckets and show me their encryption settings
+```
+
+```
+Find any IAM users with access keys older than 30 days
+```
+
+```
+What are my most expensive EC2 instances?
+```
+
+```
+Analyze my S3 buckets for security risks including public access, logging configuration, and encryption settings
+```
+
+Remember to:
+- Ask about specific resource types (e.g., EC2 instances, S3 buckets, IAM users)
+- Be clear about which regions or time periods you're interested in
+- Start with simple questions about one resource type
+- Add more complexity or conditions after seeing the initial results
+
+Claude will:
+- Choose the appropriate Steampipe tables for your request
+- Write efficient SQL queries behind the scenes
+- Format the results in a clear, readable way
+- Provide insights and recommendations based on best practices
 
 ## Local Development
 
@@ -130,17 +196,3 @@ The MCP Inspector is helpful for testing and debugging. To test your local devel
 ```sh
 npx @modelcontextprotocol/inspector dist/index.js
 ```
-
-## Open Source & Contributing
-
-This repository is published under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). Please see our [code of conduct](https://github.com/turbot/.github/blob/main/CODE_OF_CONDUCT.md). We look forward to collaborating with you!
-
-[Steampipe](https://steampipe.io) is a product produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). It is distributed under our commercial terms. Others are allowed to make their own distribution of the software, but cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
-
-## Get Involved
-
-**[Join #steampipe on Slack →](https://turbot.com/community/join)**
-
-Want to help but don't know where to start? Pick up one of the `help wanted` issues:
-- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
-- [MCP Server](https://github.com/turbot/steampipe-mcp/labels/help%20wanted)
