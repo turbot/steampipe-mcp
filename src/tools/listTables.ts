@@ -1,7 +1,7 @@
 import { DatabaseService } from "../services/database.js";
 
 export const LIST_TABLES_TOOL = {
-  name: "list_tables",
+  name: "list_steampipe_tables",
   description: "List all unique tables in the database, excluding public and information_schema schemas",
   inputSchema: {
     type: "object",

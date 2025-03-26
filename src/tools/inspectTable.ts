@@ -1,7 +1,7 @@
 import { DatabaseService } from "../services/database.js";
 
 export const INSPECT_TABLE_TOOL = {
-  name: "inspect_table",
+  name: "inspect_steampipe_table",
   description: "Get detailed information about a table including its columns",
   inputSchema: {
     type: "object",

@@ -2,7 +2,7 @@ import { Prompt } from "@modelcontextprotocol/sdk/types.js";
 import { DatabaseService } from "../services/database.js";
 
 export const INSPECT_DATABASE_TOOL = {
-  name: "inspect_database",
+  name: "inspect_steampipe_database",
   description: "List all schemas in the database",
   inputSchema: {
     type: "object",

@@ -1,7 +1,7 @@
 import { DatabaseService } from "../services/database.js";
 
 export const CLEAR_CACHE_TOOL = {
-  name: "clear_cache",
+  name: "clear_steampipe_cache",
   description: "Clear any cached database information",
   inputSchema: {
     type: "object",
