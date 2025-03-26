@@ -30,31 +30,31 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 
 ### Tools
 
-- **query**
-  - Execute read-only SQL queries against the connected Steampipe database
-  - Input: `sql` (string): The SQL query to execute
-  - All queries are executed within a READ ONLY transaction
+- **list_steampipe_tables**
+  - List all unique tables in the database, excluding public and information_schema schemas
+  - Optional input: `schema` (string): Target specific schema for table results
+  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
 
-- **list_tables**
-  - List available tables in the database
-  - Optional input: `schema` (string): Filter by schema name
-  - Optional input: `filter` (string): Filter tables by name pattern
-
-- **inspect_database**
+- **inspect_steampipe_database**
   - List all schemas in the database
-  - Optional input: `filter` (string): Filter schemas by name pattern
+  - Optional input: `filter` (string): Filter schema names by ILIKE pattern (e.g. '%aws%')
 
-- **inspect_schema**
+- **inspect_steampipe_schema**
   - List all tables in a schema
   - Input: `name` (string): The schema name to inspect
-  - Optional input: `filter` (string): Filter tables by name pattern
+  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%aws_iam_%')
 
-- **inspect_table**
+- **inspect_steampipe_table**
   - Get detailed information about a table including its columns
   - Input: `name` (string): The name of the table to inspect
   - Optional input: `schema` (string): The schema containing the table
 
-- **clear_cache**
+- **query_steampipe**
+  - Execute read-only SQL queries against the connected Steampipe database
+  - Input: `sql` (string): The SQL query to execute
+  - All queries are executed within a READ ONLY transaction
+
+- **clear_steampipe_cache**
   - Clear any cached database information
   - No input parameters required
 
