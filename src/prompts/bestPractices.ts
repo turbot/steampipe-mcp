@@ -77,10 +77,10 @@ export async function handleBestPracticesPrompt(): Promise<GetPromptResult> {
 
 5. Understanding the schema
    - Never guess table or column names - always query the information schema
-   - Use list_tables to discover and filter tables. This is the most efficient way to discover tables.
-   - Use inspect_database to get a list of schemas
-   - Use inspect_schema to get a list of tables in a schema
-   - Use inspect_table to get a list of columns in a table
+   - Use list_steampipe_tables to discover and filter tables. This is the most efficient way to discover tables.
+   - Use inspect_steampipe_database to get a list of schemas
+   - Use inspect_steampipe_schema to get a list of tables in a schema
+   - Use inspect_steampipe_table to get a list of columns in a table
    - If those are insufficient, query the information_schema directly
    - Never limit results when querying information_schema
    
