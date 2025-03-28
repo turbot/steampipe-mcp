@@ -74,11 +74,11 @@ Resource templates enable structured access to Steampipe metadata, making it eas
 
 ## Installation
 
-### Cursor
+### Claude Desktop
 
-[How to use MCP servers with Cursor →](https://modelcontextprotocol.io/quickstart/user)
+[How to use MCP servers with Claude Desktop →](https://modelcontextprotocol.io/quickstart/user)
 
-Add the following configuration to your `mcp.json`:
+Add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
 
 ```json
 {
@@ -96,6 +96,37 @@ Add the following configuration to your `mcp.json`:
 ```
 
 You can use any Steampipe database connection above, the default shown is for a local instance. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) Steampipe database.
+
+### Cursor
+
+To install the Steampipe MCP server in Cursor:
+
+1. Open your Cursor MCP configuration file:
+   ```sh
+   open ~/.cursor/mcp.json  # On macOS
+   # or
+   code ~/.cursor/mcp.json  # Using VS Code
+   ```
+
+2. Add the following configuration:
+   ```json
+   {
+     "mcpServers": {
+       "steampipe": {
+         "name": "Steampipe",
+         "description": "Query Steampipe data",
+         "server": "github:turbot/steampipe-mcp",
+         "args": ["postgresql://steampipe@localhost:9193/steampipe"]
+       }
+     }
+   }
+   ```
+
+   You can use any Steampipe database connection above. The default shown is for a local instance. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) Steampipe database.
+
+3. Save the configuration file and restart Cursor for the changes to take effect.
+
+4. The Steampipe MCP server will now be available in your Cursor environment.
 
 ## Prompting Guide
 
