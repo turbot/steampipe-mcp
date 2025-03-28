@@ -74,9 +74,9 @@ Resource templates enable structured access to Steampipe metadata, making it eas
 
 ## Installation
 
-### Claude Desktop
+### Cursor
 
-[How to use MCP servers with Claude Desktop →](https://modelcontextprotocol.io/quickstart/user)
+[How to use MCP servers with Cursor →](https://modelcontextprotocol.io/quickstart/user)
 
 Add the following configuration to your `mcp.json`:
 
@@ -108,7 +108,7 @@ The Steampipe MCP includes a pre-built `best_practices` prompt. Running it befor
 - How to write efficient queries that follow Steampipe conventions
 - Best practices for formatting and presenting results
 
-In Claude Desktop, you can run load this prompt through the plug icon in the prompt window.
+In Cursor, you can run load this prompt through the plug icon in the prompt window.
 
 ### Example Prompts
 
@@ -172,7 +172,7 @@ npm run watch
 node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
-6. To use your local development version with Claude Desktop, update your `mcp.json`:
+6. To use your local development version with Cursor, update your `mcp.json`:
 ```json
 {
   "mcpServers": {
