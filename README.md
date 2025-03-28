@@ -78,7 +78,7 @@ Resource templates enable structured access to Steampipe metadata, making it eas
 
 [How to use MCP servers with Claude Desktop →](https://modelcontextprotocol.io/quickstart/user)
 
-Add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
+Add the following configuration to your `mcp.json`:
 
 ```json
 {
@@ -172,7 +172,7 @@ npm run watch
 node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
-6. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
+6. To use your local development version with Claude Desktop, update your `mcp.json`:
 ```json
 {
   "mcpServers": {
