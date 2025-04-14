@@ -84,7 +84,7 @@ export function setupTools(server: Server, db: DatabaseService) {
         return {
           content: [{
             type: "text",
-            text: `Invalid arguments for ${name}:\n${errorMessages.join('\n')}`
+            text: errorMessages.join('\n')
           }],
           isError: true
         };
