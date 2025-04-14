@@ -19,7 +19,7 @@ export const tool: Tool = {
     },
     required: ["name"],
   },
-  handler: async (args: { name?: string; schema?: string }) => {
+  handler: async (db: DatabaseService, args: { name?: string; schema?: string }) => {
     // Check if table name is provided
     if (!args.name) {
       return {
@@ -28,7 +28,6 @@ export const tool: Tool = {
       };
     }
 
-    const db = await DatabaseService.create();
     try {
       // If schema is specified, verify it exists first
       if (args.schema) {
@@ -137,8 +136,6 @@ export const tool: Tool = {
         content: [{ type: "text", text: `Error: ${error instanceof Error ? error.message : String(error)}` }],
         isError: true,
       };
-    } finally {
-      await db.close();
     }
   },
 }; 

@@ -18,8 +18,7 @@ export const tool: Tool = {
       },
     },
   },
-  handler: async (args: { schema?: string; filter?: string }) => {
-    const db = await DatabaseService.create();
+  handler: async (db: DatabaseService, args: { schema?: string; filter?: string }) => {
     try {
       // If schema is specified, verify it exists first
       if (args.schema) {
@@ -68,8 +67,6 @@ export const tool: Tool = {
         content: [{ type: "text", text: `Error: ${error instanceof Error ? error.message : String(error)}` }],
         isError: true,
       };
-    } finally {
-      await db.close();
     }
   },
 }; 
