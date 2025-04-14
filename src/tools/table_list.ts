@@ -18,10 +18,10 @@ export const tool: Tool = {
       },
     },
   },
-  handler: async (db: DatabaseService, args: { schema?: string; filter?: string }) => {
+  handler: async (db: DatabaseService, args?: { schema?: string; filter?: string }) => {
     try {
       // If schema is specified, verify it exists first
-      if (args.schema) {
+      if (args?.schema) {
         const schemaExists = await db.executeQuery(`
           SELECT 1 
           FROM information_schema.schemata 
@@ -55,7 +55,7 @@ export const tool: Tool = {
           description
         FROM ordered_tables
         ORDER BY name;
-      `, [args.schema || null, args.filter || null]);
+      `, [args?.schema || null, args?.filter || null]);
 
       return {
         content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],

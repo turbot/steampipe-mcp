@@ -19,9 +19,9 @@ export const tool: Tool = {
     },
     required: ["name"],
   },
-  handler: async (db: DatabaseService, args: { name?: string; schema?: string }) => {
+  handler: async (db: DatabaseService, args?: { name?: string; schema?: string }) => {
     // Check if table name is provided
-    if (!args.name) {
+    if (!args?.name) {
       return {
         content: [{ type: "text", text: "Error: Table name is required" }],
         isError: true,
