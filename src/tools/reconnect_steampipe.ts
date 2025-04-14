@@ -7,17 +7,17 @@ import { buildSteampipeCommand } from "../utils/steampipe.js";
 
 export const tool: Tool = {
   name: "reconnect_steampipe",
-  description: "Reconnect to the Steampipe database, optionally using a new database path.",
+  description: "Reconnect to the Steampipe database, optionally using a new connection string.",
   inputSchema: {
     type: "object",
     properties: {
-      database_path: {
+      connection_string: {
         type: "string",
-        description: "Optional new database path to connect to"
+        description: "Optional new database connection string to connect to"
       }
     }
   },
-  handler: async (db: DatabaseService, args: { database_path?: string }) => {
+  handler: async (db: DatabaseService, args: { connection_string?: string }) => {
     logger.debug('Executing reconnect_steampipe tool');
 
     try {
@@ -26,11 +26,11 @@ export const tool: Tool = {
       await db.close();
       
       // Create a new database service instance
-      const newDb = await DatabaseService.create(args.database_path);
+      const newDb = await DatabaseService.create(args.connection_string);
       
       // Update the current database service with the new config
       await db.setDatabaseConfig({
-        path: newDb.databasePath,
+        connectionString: newDb.connectionString,
         sourceType: newDb.sourceType
       });
       
@@ -40,12 +40,12 @@ export const tool: Tool = {
       const result = {
         connection: {
           success: true,
-          path: db.databasePath,
+          connection_string: db.connectionString,
           source: db.sourceType === 'steampipe' ? 'steampipe CLI' : 'provided argument',
           status: "connected"
         },
         debug: {
-          command: buildSteampipeCommand(`connect ${args.database_path || ''}`)
+          command: buildSteampipeCommand(`connect ${args.connection_string || ''}`)
         }
       };
       

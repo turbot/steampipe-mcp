@@ -2,30 +2,31 @@ import { execSync } from "child_process";
 import { resolve } from "path";
 import { existsSync } from "fs";
 import { logger } from "./logger.js";
-import duckdb from 'duckdb';
+import pg from 'pg';
 import { executeCommand } from "../utils/command.js";
 import { buildSteampipeCommand, getSteampipeEnv } from "../utils/steampipe.js";
 
-// Define types for DuckDB callback parameters
-type DuckDBError = Error | null;
-type DuckDBRow = Record<string, any>;
+const { Pool } = pg;
+type Pool = pg.Pool;
+type PoolClient = pg.PoolClient;
+type QueryResult = pg.QueryResult;
 
 export type DatabaseSourceType = 'cli-arg' | 'steampipe';
 
 export interface DatabaseConfig {
-  path: string;
+  connectionString: string;
   sourceType: DatabaseSourceType;
 }
 
-export interface DatabasePathInfo {
-  path: string;
+export interface DatabaseConnectionInfo {
+  connectionString: string;
   source: string;
   sourceType: DatabaseSourceType;
 }
 
 export class DatabaseService {
-  private db: duckdb.Database | null = null;
-  private connection: duckdb.Connection | null = null;
+  private pool: Pool | null = null;
+  private client: PoolClient | null = null;
   private config: DatabaseConfig;
   private isConnecting: boolean = false;
 
@@ -33,8 +34,8 @@ export class DatabaseService {
     this.config = config;
   }
 
-  get databasePath(): string {
-    return this.config.path;
+  get connectionString(): string {
+    return this.config.connectionString;
   }
 
   get sourceType(): DatabaseSourceType {
@@ -44,14 +45,14 @@ export class DatabaseService {
   /**
    * Create a new DatabaseService instance and initialize the connection
    */
-  static async create(providedPath?: string): Promise<DatabaseService> {
-    const pathInfo = await DatabaseService.resolveDatabasePath(providedPath);
-    logger.info(`Database path resolved to: ${pathInfo.path}`);
-    logger.info(`Database path source type: ${pathInfo.sourceType}`);
+  static async create(providedConnectionString?: string): Promise<DatabaseService> {
+    const connectionInfo = await DatabaseService.resolveConnection(providedConnectionString);
+    logger.info(`Database connection resolved to: ${connectionInfo.connectionString}`);
+    logger.info(`Database connection source type: ${connectionInfo.sourceType}`);
 
     const service = new DatabaseService({
-      path: pathInfo.path,
-      sourceType: pathInfo.sourceType
+      connectionString: connectionInfo.connectionString,
+      sourceType: connectionInfo.sourceType
     });
 
     await service.initialize();
@@ -61,68 +62,30 @@ export class DatabaseService {
   }
 
   /**
-   * Get the database path to use. Priority order:
-   * 1. Provided path argument
-   * 2. Environment variable STEAMPIPE_MCP_DATABASE_PATH
+   * Get the database connection string to use. Priority order:
+   * 1. Provided connection string argument
+   * 2. Environment variable STEAMPIPE_WORKSPACE_DATABASE
    * 3. Command line argument
-   * 4. Steampipe CLI
+   * 4. Default Steampipe connection (postgresql://localhost:9193/steampipe)
    */
-  private static async resolveDatabasePath(providedPath?: string): Promise<DatabasePathInfo> {
-    const pathToUse = providedPath || process.env.STEAMPIPE_MCP_DATABASE_PATH || (process.argv.length > 2 ? process.argv[2] : undefined);
+  private static async resolveConnection(providedConnectionString?: string): Promise<DatabaseConnectionInfo> {
+    const connectionToUse = providedConnectionString || 
+                           process.env.STEAMPIPE_WORKSPACE_DATABASE || 
+                           (process.argv.length > 2 ? process.argv[2] : undefined) ||
+                           'postgresql://steampipe@localhost:9193/steampipe';
     
-    if (pathToUse) {
-      const source = providedPath ? 'function argument' :
-                    process.env.STEAMPIPE_MCP_DATABASE_PATH ? 'environment variable' :
-                    'command line argument';
-      
-      logger.info(`Database path provided via ${source}: ${pathToUse}`);
-      const resolvedPath = resolve(pathToUse);
-      logger.info(`Resolved database path to: ${resolvedPath}`);
-      
-      if (!existsSync(resolvedPath)) {
-        throw new Error(`Database file does not exist: ${resolvedPath}`);
-      }
-      
-      return {
-        path: resolvedPath,
-        source,
-        sourceType: 'cli-arg'
-      };
-    }
-
-    // Fall back to Steampipe CLI
-    logger.info('No database path provided, attempting to use Steampipe CLI...');
-
-    // Debug Steampipe CLI environment if needed
-    logger.debug('Which steampipe:', executeCommand('which steampipe || echo "not found"', { env: getSteampipeEnv() }));
-
-    const cmd = buildSteampipeCommand('connect', { output: 'json' });
-    const output = executeCommand(cmd, { env: getSteampipeEnv() });
-
-    try {
-      const result = JSON.parse(output);
-      if (!result.database_filepath) {
-        logger.error('Steampipe connect output JSON:', JSON.stringify(result));
-        throw new Error('Steampipe connect output missing database_filepath field');
-      }
-
-      const path = result.database_filepath;
-      logger.info(`Using Steampipe database path: ${path}`);
-
-      if (!existsSync(path)) {
-        throw new Error(`Steampipe database file does not exist: ${path}`);
-      }
-
-      return {
-        path,
-        source: 'steampipe CLI connection',
-        sourceType: 'steampipe'
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      logger.error('Failed to get database path from Steampipe CLI:', message);
-      throw new Error('Failed to get database path. Please install Steampipe CLI or provide a database path directly.');
-    }
+    const source = providedConnectionString ? 'function argument' :
+                  process.env.STEAMPIPE_WORKSPACE_DATABASE ? 'environment variable' :
+                  process.argv.length > 2 ? 'command line argument' :
+                  'default steampipe connection';
+    
+    logger.info(`Database connection provided via ${source}: ${connectionToUse}`);
+    
+    return {
+      connectionString: connectionToUse,
+      source,
+      sourceType: source === 'default steampipe connection' ? 'steampipe' : 'cli-arg'
+    };
   }
 
   /**
@@ -170,18 +133,58 @@ export class DatabaseService {
     await this.close();
       
     try {
-      logger.debug(`Connecting to database: ${this.config.path}`);
-      this.db = new duckdb.Database(this.config.path, { access_mode: 'READ_ONLY' });
-      this.connection = this.db.connect();
+      logger.debug(`Connecting to database: ${this.config.connectionString}`);
+      
+      const url = new URL(this.config.connectionString);
+      const config: pg.PoolConfig = {
+        connectionString: this.config.connectionString,
+        max: 1, // We only need one client
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      };
+
+      // Configure SSL based on URL parameters or use secure defaults
+      if (url.searchParams.has('sslmode')) {
+        const sslMode = url.searchParams.get('sslmode');
+        if (sslMode === 'require' || sslMode === 'verify-ca' || sslMode === 'verify-full') {
+          config.ssl = { rejectUnauthorized: true };
+        }
+        // For other modes (disable, allow, prefer), let postgres handle it
+      } else {
+        // Default to prefer with self-signed certs allowed
+        config.ssl = { rejectUnauthorized: false };
+      }
+
+      this.pool = new Pool(config);
+
+      // Add error handler for connection issues
+      this.pool.on('error', (err) => {
+        logger.error('Unexpected database pool error:', err.message);
+      });
+
+      // Get a client from the pool
+      this.client = await this.pool.connect();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      
+      // Provide more helpful error messages for common issues
+      if (error instanceof Error) {
+        if (error.message.includes('ECONNREFUSED')) {
+          throw new Error('Unable to connect to Steampipe database. Please ensure Steampipe is running with the command: steampipe service start');
+        } else if (error.message.includes('password authentication failed')) {
+          throw new Error('Database authentication failed. Please check your connection credentials.');
+        } else {
+          throw new Error(`Database connection failed: ${error.message}. Please ensure Steampipe is running with the command: steampipe service start`);
+        }
+      }
+      
       logger.error(`Failed to connect to database: ${message}`);
       throw error;
     }
   }
 
   async executeQuery(sql: string, params: any[] = []): Promise<any[]> {
-    if (!this.connection) {
+    if (!this.client) {
       await this.initialize();
     }
     
@@ -189,47 +192,28 @@ export class DatabaseService {
   }
 
   private async runQuery(sql: string, params: any[]): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const queryFn = params.length > 0 ? 
-        (callback: any) => this.connection!.all(sql, params, callback) :
-        (callback: any) => this.connection!.all(sql, callback);
-        
-      queryFn((err: DuckDBError, rows: DuckDBRow[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows || []);
-        }
-      });
-    });
+    if (!this.client) {
+      throw new Error('No database connection available');
+    }
+
+    try {
+      const result: QueryResult = await this.client.query(sql, params);
+      return result.rows;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`Query execution failed: ${message}`);
+      throw error;
+    }
   }
 
   async close(): Promise<void> {
-    const errors: Error[] = [];
-    
-    try {
-      if (this.connection) {
-        logger.debug('Closing database connection');
-        this.connection.close();
-        this.connection = null;
-      }
-    } catch (error) {
-      errors.push(error instanceof Error ? error : new Error(String(error)));
+    if (this.client) {
+      await this.client.release();
+      this.client = null;
     }
-    
-    try {
-      if (this.db) {
-        logger.debug('Closing database');
-        await new Promise<void>((resolve) => this.db!.close(() => resolve()));
-        this.db = null;
-      }
-    } catch (error) {
-      errors.push(error instanceof Error ? error : new Error(String(error)));
-    }
-    
-    if (errors.length > 0) {
-      logger.error('Errors occurred while closing database:', errors);
-      throw new AggregateError(errors, 'Failed to close database cleanly');
+    if (this.pool) {
+      await this.pool.end();
+      this.pool = null;
     }
   }
 }

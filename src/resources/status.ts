@@ -5,30 +5,30 @@ import { getServerStartTime } from '../index.js';
 import type { Resource } from "../types/resource.js";
 
 export const resource: Resource = {
-  uri: "tailpipe://status",
+  uri: "steampipe://status",
   name: "status",
   type: "Status",
-  description: "Server status information including database connection, Tailpipe version, and uptime.",
+  description: "Server status information including database connection, Steampipe version, and uptime.",
   handler: async (db: DatabaseService): Promise<any> => {
     logger.debug('Handling status resource request');
     
-    // Get the database path from the DatabaseService
-    const dbPath = db.databasePath || 'Unknown';
+    // Get the database connection string from the DatabaseService
+    const dbConnection = db.connectionString || 'Unknown';
     
-    // Get Tailpipe CLI version (when available)
-    let tailpipeVersion = 'Not installed';
+    // Get Steampipe CLI version (when available)
+    let steampipeVersion = 'Not installed';
     try {
-      const output = execSync('tailpipe --version', { encoding: 'utf-8' });
+      const output = execSync('steampipe --version', { encoding: 'utf-8' });
       const versionMatch = output.trim().match(/v?(\d+\.\d+(\.\d+)?)/i);
       if (versionMatch && versionMatch[1]) {
-        tailpipeVersion = versionMatch[1];
+        steampipeVersion = versionMatch[1];
       } else {
-        logger.error('Unexpected tailpipe version output format:', output);
-        tailpipeVersion = output.trim();
+        logger.error('Unexpected steampipe version output format:', output);
+        steampipeVersion = output.trim();
       }
     } catch (err) {
-      logger.error('Error getting tailpipe version:', err instanceof Error ? err.message : String(err));
-      tailpipeVersion = 'Not installed or failed to run';
+      logger.error('Error getting steampipe version:', err instanceof Error ? err.message : String(err));
+      steampipeVersion = 'Not installed or failed to run';
     }
     
     // Get connection status
@@ -43,11 +43,11 @@ export const resource: Resource = {
     // Prepare the status response
     const content = {
       database: {
-        path: dbPath,
+        connection_string: dbConnection,
         connection_status: connectionStatus
       },
-      tailpipe: {
-        version: tailpipeVersion
+      steampipe: {
+        version: steampipeVersion
       },
       mcp_server: {
         version: "0.1.0", // Matches the version in package.json
@@ -58,7 +58,7 @@ export const resource: Resource = {
     return {
       contents: [
         {
-          uri: "tailpipe://status",
+          uri: "steampipe://status",
           mimeType: "application/json",
           text: JSON.stringify(content, null, 2)
         }
