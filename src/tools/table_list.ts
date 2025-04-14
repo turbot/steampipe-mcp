@@ -58,8 +58,7 @@ export const tool: Tool = {
       let query = `
         SELECT DISTINCT 
           table_schema as schema,
-          table_name as name,
-          table_type as type
+          table_name as name
         FROM information_schema.tables
         WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
       `;
