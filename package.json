@@ -17,16 +17,46 @@
     "build": "tsc && shx chmod +x dist/index.js",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "clean:tests": "node tests/cleanup.js",
+    "start": "node dist/index.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest --watch",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest --coverage",
+    "test:db": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'DuckDB'",
+    "test:tools": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'Tools'",
+    "test:resources": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'Resources'",
+    "test:server": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'MCP Server|Server Startup'",
+    "test:resilience": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'Claude Desktop|Resilience'",
+    "test:e2e": "NODE_OPTIONS='--experimental-vm-modules --no-warnings=ExperimentalWarning' jest -t 'E2E'",
+    "test:legacy": "node tests/run-all-tests.js",
+    "test:legacy:manual": "node tests/manual-setup.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
-    "@types/node": "^20.11.5",
-    "pg": "^8.13.3"
+    "duckdb": "^1.2.0"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.10",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.11.5",
+    "jest": "^29.7.0",
     "shx": "^0.3.4",
+    "ts-jest": "^29.2.6",
     "typescript": "^5.6.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.ts"],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", {
+        "useESM": true,
+        "tsconfig": "tsconfig.test.json"
+      }]
+    },
+    "extensionsToTreatAsEsm": [".ts"]
   }
 }

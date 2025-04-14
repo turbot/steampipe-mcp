@@ -1,76 +1,107 @@
-# Steampipe Model Context Protocol (MCP) Server
+# Tailpipe Model Context Protocol (MCP) Server
 
-Enable AI assistants like Claude to explore and query your Steampipe data! This Model Context Protocol (MCP) server lets AI tools:
+Enable AI assistants like Claude to explore and query your Tailpipe data! This Model Context Protocol (MCP) server lets AI tools:
 
-- Browse your Steampipe schemas and tables
+- Browse your Tailpipe schemas and tables
 - Understand your data structure and relationships
-- Run read-only SQL queries against your data
-- Provide insights and analysis based on your infrastructure data
+- Run SQL queries against your data
+- Provide insights and analysis based on your cloud and SaaS data
 
 Perfect for:
 - Getting AI help analyzing your cloud infrastructure
-- Letting AI explore your compliance and security data
-- Having AI assist with Steampipe query development
-- Enabling natural language interactions with your Steampipe data
+- Having AI assist with Tailpipe query development
+- Enabling natural language interactions with your Tailpipe data
+- Exploring and analyzing your data with AI assistance
 
-Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
+Connects directly to your local Tailpipe database file, giving you AI access to all your cloud and SaaS data.
 
 ## Components
 
 ### Prompts
 
+The Tailpipe MCP includes a built-in prompt to help you work effectively with the data:
+
 - **best_practices**
-  - Best practices for working with Steampipe data
-  - Provides detailed guidance on:
-    - How to explore available data
-    - When to use specific tables
-    - Query structure and optimization
-    - Response formatting
-    - Performance considerations
+  - Best practices for working with Tailpipe data
+  - Provides guidance on:
+    - Using tools to explore available data (partition_list, table_list, etc.)
+    - SQL syntax and style conventions
+    - Data freshness and connection management
+    - Example workflow and queries
+
+You can load this prompt in Claude Desktop through the plug icon in the prompt window. The prompt will teach Claude how to:
+- Use the appropriate tools to explore and understand your data
+- Write efficient SQL queries using DuckDB syntax
+- Follow consistent formatting and style conventions
+- Work with data timestamps and freshness
 
 ### Tools
 
-- **list_steampipe_tables**
-  - List all unique tables in the database, excluding public and information_schema schemas
-  - Optional input: `schema` (string): Target specific schema for table results
-  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
-
-- **inspect_steampipe_database**
-  - List all schemas in the database
-  - Optional input: `filter` (string): Filter schema names by ILIKE pattern (e.g. '%aws%')
-
-- **inspect_steampipe_schema**
-  - List all tables in a schema
-  - Input: `name` (string): The schema name to inspect
-  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%aws_iam_%')
-
-- **inspect_steampipe_table**
-  - Get detailed information about a table including its columns
-  - Input: `name` (string): The name of the table to inspect
-  - Optional input: `schema` (string): The schema containing the table
-
-- **query_steampipe**
-  - Execute read-only SQL queries against the connected Steampipe database
+Database Operations:
+- **query_tailpipe**
+  - Run a read-only Tailpipe SQL query
   - Input: `sql` (string): The SQL query to execute
-  - All queries are executed within a READ ONLY transaction
+  
+- **reconnect_tailpipe**
+  - Reconnect to the database, optionally using a new database path
+  - Optional input: `database_path` (string): New database path to connect to
 
-- **clear_steampipe_cache**
-  - Clear any cached database information
+Data Structure Operations:
+- **partition_list**
+  - List all available Tailpipe partitions
   - No input parameters required
 
-### Resource Templates
+- **partition_show**
+  - Show details of a specific Tailpipe partition
+  - Input: `name` (string): Name of the partition to show details for
 
-The Steampipe MCP includes resource templates that define how to interact with different types of resources. Currently supported resource types:
+- **table_list**
+  - List all available Tailpipe tables
+  - No input parameters required
 
-- **schema**
-  - Represents a Steampipe schema
-  - Properties include name, description, and tables
+- **table_show**
+  - Show details of a specific Tailpipe table
+  - Input: `name` (string): Name of the table to show details for
 
-- **table**
-  - Represents a Steampipe table
-  - Properties include name, description, columns, and relationships
+Plugin Operations:
+- **plugin_list**
+  - List all available Tailpipe plugins
+  - No input parameters required
 
-Resource templates enable structured access to Steampipe metadata, making it easier for AI tools to understand and navigate your data.
+- **plugin_show**
+  - Show details of a specific Tailpipe plugin
+  - Input: `name` (string): Name of the plugin to show details for
+
+Source Operations:
+- **source_list**
+  - List all available Tailpipe sources
+  - No input parameters required
+
+- **source_show**
+  - Show details of a specific Tailpipe source
+  - Input: `name` (string): Name of the source to show details for
+
+### Resource Types
+
+The Tailpipe MCP provides access to several types of resources:
+
+- **Partitions**
+  - Represents a data partition in Tailpipe
+  - Properties include name, description, file count, file size, and associated plugin
+  
+- **Tables**
+  - Represents a Tailpipe table
+  - Properties include name, description, file count, file size, and associated plugin
+
+- **Plugins**
+  - Represents a Tailpipe plugin
+  - Properties include name, version, and associated partitions
+
+- **Sources**
+  - Represents a Tailpipe data source
+  - Properties include name, description, and associated plugin
+
+Resource templates enable structured access to Tailpipe metadata, making it easier for AI tools to understand and navigate your data.
 
 ## Installation
 
@@ -83,23 +114,37 @@ Add the following configuration to the "mcpServers" section of your `claude_desk
 ```json
 {
   "mcpServers": {
-    "steampipe": {
+    "tailpipe": {
       "command": "npx",
       "args": [
         "-y",
-        "github:turbot/steampipe-mcp",
-        "postgresql://steampipe@localhost:9193/steampipe"
+        "github:turbot/tailpipe-mcp"
       ]
     }
   }
 }
 ```
 
-You can use any Steampipe database connection above, the default shown is for a local instance. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) Steampipe database.
+This will automatically use the Tailpipe CLI to discover your database. If you want to specify a database file path explicitly, you can add it as an additional argument:
+
+```json
+{
+  "mcpServers": {
+    "tailpipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "github:turbot/tailpipe-mcp",
+        "/path/to/your/tailpipe.db"
+      ]
+    }
+  }
+}
+```
 
 ### Cursor
 
-To install the Steampipe MCP server in Cursor:
+To install the Tailpipe MCP server in Cursor:
 
 1. Open your Cursor MCP configuration file:
    ```sh
@@ -108,70 +153,81 @@ To install the Steampipe MCP server in Cursor:
    code ~/.cursor/mcp.json  # Using VS Code
    ```
 
-2. Add the following configuration:
+2. Add the following configuration to enable automatic database discovery using the Tailpipe CLI:
    ```json
    {
      "mcpServers": {
-       "steampipe": {
-         "name": "Steampipe",
-         "description": "Query Steampipe data",
-         "server": "github:turbot/steampipe-mcp",
-         "args": ["postgresql://steampipe@localhost:9193/steampipe"]
+       "tailpipe": {
+         "name": "Tailpipe",
+         "description": "Query Tailpipe data",
+         "server": "github:turbot/tailpipe-mcp"
        }
      }
    }
    ```
 
-   You can use any Steampipe database connection above. The default shown is for a local instance. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) Steampipe database.
+   Alternatively, if you want to specify a database path explicitly:
+   ```json
+   {
+     "mcpServers": {
+       "tailpipe": {
+         "name": "Tailpipe",
+         "description": "Query Tailpipe data",
+         "server": "github:turbot/tailpipe-mcp",
+         "args": ["/path/to/your/tailpipe.db"]
+       }
+     }
+   }
+   ```
 
 3. Save the configuration file and restart Cursor for the changes to take effect.
 
-4. The Steampipe MCP server will now be available in your Cursor environment.
+4. The Tailpipe MCP server will now be available in your Cursor environment.
 
 ## Prompting Guide
 
 ### Best Practices
 
-The Steampipe MCP includes a pre-built `best_practices` prompt. Running it before running your own prompts will teach the LLM how to work most effectively with Steampipe, including:
+The Tailpipe MCP includes a pre-built `best_practices` prompt. Running it before running your own prompts will teach the LLM how to work most effectively with Tailpipe, including:
 
 - How to explore available data schemas and tables
 - When to use specific tables for different resource types
-- How to write efficient queries that follow Steampipe conventions
+- How to write efficient queries that follow Tailpipe conventions
 - Best practices for formatting and presenting results
 
-In Cursor, you can run load this prompt through the plug icon in the prompt window.
+In Claude Desktop, you can load this prompt through the plug icon in the prompt window.
 
 ### Example Prompts
 
-Each prompt below is designed to work with Steampipe's table structure, where each resource type (buckets, instances, etc.) has its own table.
+Each prompt below is designed to work with Tailpipe's table structure, where each resource type (buckets, instances, etc.) has its own table.
 
 ```
-List 10 S3 buckets and show me their encryption settings
-```
-
-```
-Find any IAM users with access keys older than 30 days
+List all tables in the aws schema
 ```
 
 ```
-What are my most expensive EC2 instances?
+What columns are in the aws_s3_bucket table?
 ```
 
 ```
-Analyze my S3 buckets for security risks including public access, logging configuration, and encryption settings
+Find S3 buckets that don't have encryption enabled
+```
+
+```
+What EC2 instances have public IPs and are in a public subnet?
 ```
 
 Remember to:
 - Ask about specific resource types (e.g., EC2 instances, S3 buckets, IAM users)
-- Be clear about which regions or time periods you're interested in
+- Be clear about which services or schemas you're interested in
 - Start with simple questions about one resource type
 - Add more complexity or conditions after seeing the initial results
 
 Claude will:
-- Choose the appropriate Steampipe tables for your request
+- Choose the appropriate Tailpipe tables for your request
 - Write efficient SQL queries behind the scenes
 - Format the results in a clear, readable way
-- Provide insights and recommendations based on best practices
+- Provide insights and analysis based on your data
 
 ## Local Development
 
@@ -179,8 +235,8 @@ To set up the project for local development:
 
 1. Clone the repository and navigate to the directory:
 ```sh
-git clone https://github.com/turbot/steampipe-mcp.git
-cd steampipe-mcp
+git clone https://github.com/turbot/tailpipe-mcp.git
+cd tailpipe-mcp
 ```
 
 2. Install dependencies:
@@ -198,27 +254,86 @@ npm run build
 npm run watch
 ```
 
-5. To test locally, ensure Steampipe is running and then:
+5. To test locally:
 ```sh
-node dist/index.js postgresql://steampipe@localhost:9193/steampipe
+# Run the main test (conversation with query testing)
+npm test
+
+# Test just the DuckDB connection
+npm run test:duckdb
+
+# Run a basic server test
+npm run test:simple
+
+# Set up for manual testing
+npm run test:setup
+
+# Clean up any leftover test files
+npm run clean:tests
 ```
 
-6. To use your local development version with Cursor, update your `mcp.json`:
+6. To run the server:
+
+The MCP server can be run in two ways:
+
+```sh
+# Automatic database discovery (using Tailpipe CLI)
+node dist/index.js
+
+# Or with explicit database path
+node dist/index.js /path/to/your/tailpipe.db
+
+# Control log verbosity with environment variable
+LOG_LEVEL=DEBUG node dist/index.js
+```
+
+When run without arguments, the server will use the Tailpipe CLI to detect your database (`tailpipe connect --output json`). This requires the Tailpipe CLI to be installed and configured.
+
+You can control the server behavior using environment variables:
+
+- `TAILPIPE_MCP_DATABASE_PATH`: Specify the database path (alternative to command line argument)
+- `TAILPIPE_MCP_LOG_LEVEL`: Control logging verbosity with these values:
+  - `DEBUG`: Show all messages (most verbose)
+  - `INFO`: Show informational, warning, and error messages (default)
+  - `WARN`: Show only warning and error messages
+  - `ERROR`: Show only error messages
+  - `SILENT`: Disable all logging
+- `TAILPIPE_MCP_DEBUG`: Set to 'true' to enable additional debug logging for Tailpipe CLI interactions
+
+Example using environment variables:
+```sh
+TAILPIPE_MCP_DATABASE_PATH=/path/to/db.db TAILPIPE_MCP_LOG_LEVEL=DEBUG node dist/index.js
+```
+
+7. To use your local development version with Claude Desktop, update your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "steampipe": {
+    "tailpipe": {
       "command": "node",
       "args": [
         "/path/to/your/workspace/dist/index.js",
-        "postgresql://steampipe@localhost:9193/steampipe"
+        "/path/to/your/tailpipe.db"
       ]
     }
   }
 }
 ```
 
-Replace `/path/to/your/workspace` with the absolute path to your local development directory. For example, if you cloned the repository to `~/src/steampipe-mcp`, you would use `~/src/steampipe-mcp/dist/index.js`.
+Replace `/path/to/your/workspace` with the absolute path to your local development directory. For example, if you cloned the repository to `~/src/tailpipe-mcp`, you would use `~/src/tailpipe-mcp/dist/index.js`.
+
+8. For local development with Cursor, update your `~/.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "tailpipe": {
+      "name": "Tailpipe",
+      "description": "Query Tailpipe data",
+      "command": "~/src/tailpipe-mcp/dist/index.js"
+    }
+  }
+}
+```
 
 ## Testing with MCP Inspector
 
@@ -226,18 +341,21 @@ The MCP Inspector is helpful for testing and debugging. To test your local devel
 
 ```sh
 npx @modelcontextprotocol/inspector dist/index.js
+
+# Or with explicit database path:
+npx @modelcontextprotocol/inspector dist/index.js /path/to/your/tailpipe.db
 ```
 
 ## Open Source & Contributing
 
 This repository is published under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). Please see our [code of conduct](https://github.com/turbot/.github/blob/main/CODE_OF_CONDUCT.md). We look forward to collaborating with you!
 
-[Steampipe](https://steampipe.io) is a product produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). It is distributed under our commercial terms. Others are allowed to make their own distribution of the software, but they cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
+[Tailpipe](https://tailpipe.io) is a product produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). It is distributed under our commercial terms. Others are allowed to make their own distribution of the software, but they cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
 
 ## Get Involved
 
-**[Join #steampipe on Slack →](https://turbot.com/community/join)**
+**[Join #tailpipe on Slack →](https://turbot.com/community/join)**
 
 Want to help but don't know where to start? Pick up one of the `help wanted` issues:
-* [Steampipe](https://github.com/turbot/steampipe/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
-* [Steampipe MCP](https://github.com/turbot/steampipe-mcp/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+* [Tailpipe](https://github.com/turbot/tailpipe/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+* [Tailpipe MCP](https://github.com/turbot/tailpipe-mcp/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)

@@ -1,25 +1,53 @@
 import { ListPromptsRequestSchema, GetPromptRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { BEST_PRACTICES_PROMPT, handleBestPracticesPrompt } from "./bestPractices.js";
+import { prompt as bestPracticesPrompt } from "./bestPractices.js";
+import { logger } from '../services/logger.js';
+import type { Prompt } from "../types/prompt.js";
 
-export function setupPrompts(server: Server) {
+// Register all available prompts
+const prompts: Prompt[] = [
+  bestPracticesPrompt
+];
+
+// Export prompts for server capabilities
+export const promptCapabilities = {
+  prompts: Object.fromEntries(
+    prompts.map(p => [p.name, {
+      name: p.name,
+      description: p.description
+    }])
+  )
+};
+
+export function setupPromptHandlers(server: Server) {
   // Register prompt list handler
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
-    return {
-      prompts: [BEST_PRACTICES_PROMPT],
-    };
+    try {
+      return { prompts: Object.values(promptCapabilities.prompts) };
+    } catch (error) {
+      // Log the error but don't fail - return default prompts
+      if (error instanceof Error) {
+        logger.error("Critical error listing prompts:", error.message);
+      } else {
+        logger.error("Critical error listing prompts:", error);
+      }
+      
+      // Return empty list on error
+      return { prompts: [] };
+    }
   });
 
   // Register prompt get handler
   server.setRequestHandler(GetPromptRequestSchema, async (request) => {
     const { name } = request.params;
 
-    switch (name) {
-      case BEST_PRACTICES_PROMPT.name:
-        return handleBestPracticesPrompt();
-
-      default:
-        throw new Error(`Unknown prompt: ${name}`);
+    // Find matching prompt
+    const prompt = prompts.find(p => p.name === name);
+    if (!prompt) {
+      throw new Error(`Unknown prompt: ${name}`);
     }
+
+    // Handle the prompt request
+    return prompt.handler();
   });
 } 
