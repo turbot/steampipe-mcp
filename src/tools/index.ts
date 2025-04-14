@@ -51,8 +51,9 @@ export function setupTools(server: Server, db: DatabaseService) {
       throw new Error(`Tool ${name} has no handler defined`);
     }
 
-    // Special handling for database-dependent tools
-    if (name === 'query_steampipe' || name === 'reconnect_steampipe') {
+    // Pass database instance to database-dependent tools
+    if (name === 'query_steampipe' || name === 'reconnect_steampipe' || 
+        name === 'table_list' || name === 'table_show') {
       return await (tool.handler as (db: DatabaseService, args: unknown) => Promise<ServerResult>)(db, args || {});
     }
 

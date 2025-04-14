@@ -18,9 +18,10 @@ export const tool: Tool = {
       },
     },
     required: ["name"],
+    additionalProperties: false
   },
-  handler: async (db: DatabaseService | undefined, args?: { name?: string; schema?: string }) => {
-    // Check if table name is provided
+  handler: async (db: DatabaseService | undefined, args?: { name: string; schema?: string }) => {
+    // Check if args is provided and has required name property
     if (!args?.name) {
       return {
         content: [{ type: "text", text: "Error: Table name is required" }],
@@ -52,42 +53,52 @@ export const tool: Tool = {
           };
         }
 
-        const rows = await db.executeQuery(`
-          select 
-            c.column_name,
-            c.data_type,
-            c.is_nullable,
-            c.column_default,
-            pg_catalog.col_description(
-              (quote_ident($1) || '.' || quote_ident($2))::regclass::oid,
-              c.ordinal_position
-            ) as description
-          from 
-            information_schema.columns c
-          where 
-            c.table_schema = $1
-            and c.table_name = $2
-          order by 
-            c.ordinal_position
+        // Get table metadata and columns
+        const [tableInfo] = await db.executeQuery(`
+          SELECT 
+            t.table_schema as schema,
+            t.table_name as name,
+            obj_description((quote_ident($1) || '.' || quote_ident($2))::regclass::oid) as description
+          FROM information_schema.tables t
+          WHERE t.table_schema = $1 AND t.table_name = $2
         `, [args.schema, args.name]);
 
-        if (rows.length === 0) {
+        if (!tableInfo) {
           return {
             content: [{ type: "text", text: `Error: Table '${args.name}' not found in schema '${args.schema}'` }],
             isError: true,
           };
         }
 
+        const columns = await db.executeQuery(`
+          SELECT 
+            c.column_name as name,
+            c.data_type as type,
+            c.is_nullable,
+            c.column_default as default_value,
+            pg_catalog.col_description(
+              (quote_ident($1) || '.' || quote_ident($2))::regclass::oid,
+              c.ordinal_position
+            ) as description
+          FROM 
+            information_schema.columns c
+          WHERE 
+            c.table_schema = $1
+            AND c.table_name = $2
+          ORDER BY 
+            c.ordinal_position
+        `, [args.schema, args.name]);
+
         return {
-          content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify({ ...tableInfo, columns }, null, 2) }],
           isError: false,
         };
       }
 
       // If no schema specified, find the first matching table in the search path
-      const rows = await db.executeQuery(`
-        with table_schemas as (
-          select distinct
+      const [tableInfo] = await db.executeQuery(`
+        WITH table_schemas AS (
+          SELECT DISTINCT
             n.nspname as schema_name,
             first_value(n.nspname) over (
               partition by c.relname 
@@ -100,42 +111,53 @@ export const tool: Tool = {
                 -- Then use schema name for stable ordering
                 n.nspname
             ) as first_schema
-          from 
+          FROM 
             pg_class c
-            join pg_namespace n on n.oid = c.relnamespace
-          where 
+            JOIN pg_namespace n on n.oid = c.relnamespace
+          WHERE 
             c.relname = $1
-            and c.relkind in ('r', 'v', 'm', 'f', 'p')  -- Include tables, views, materialized views, foreign tables, partitioned tables
+            AND c.relkind in ('r', 'v', 'm', 'f', 'p')
         )
-        select 
-          c.column_name,
-          c.data_type,
-          c.is_nullable,
-          c.column_default,
-          pg_catalog.col_description(
-            (quote_ident(s.first_schema) || '.' || quote_ident($1))::regclass::oid,
-            c.ordinal_position
-          ) as description
-        from 
+        SELECT 
+          s.first_schema as schema,
+          t.table_name as name,
+          obj_description((quote_ident(s.first_schema) || '.' || quote_ident(t.table_name))::regclass::oid) as description
+        FROM 
           table_schemas s
-          join information_schema.columns c on 
-            c.table_schema = s.schema_name
-            and c.table_name = $1
-        where
+          JOIN information_schema.tables t ON t.table_schema = s.schema_name AND t.table_name = $1
+        WHERE 
           s.schema_name = s.first_schema
-        order by 
-          c.ordinal_position
+        LIMIT 1
       `, [args.name]);
 
-      if (rows.length === 0) {
+      if (!tableInfo) {
         return {
           content: [{ type: "text", text: `Error: Table '${args.name}' not found` }],
           isError: true,
         };
       }
 
+      const columns = await db.executeQuery(`
+        SELECT 
+          c.column_name as name,
+          c.data_type as type,
+          c.is_nullable,
+          c.column_default as default_value,
+          pg_catalog.col_description(
+            (quote_ident($1) || '.' || quote_ident($2))::regclass::oid,
+            c.ordinal_position
+          ) as description
+        FROM 
+          information_schema.columns c
+        WHERE 
+          c.table_schema = $1
+          AND c.table_name = $2
+        ORDER BY 
+          c.ordinal_position
+      `, [tableInfo.schema, args.name]);
+
       return {
-        content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify({ ...tableInfo, columns }, null, 2) }],
         isError: false,
       };
     } catch (error) {
