@@ -1,5 +1,6 @@
 import { DatabaseService } from "../services/database.js";
 import { type Tool } from "@modelcontextprotocol/sdk/types.js";
+import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
   name: "table_show",
@@ -18,7 +19,15 @@ export const tool: Tool = {
     },
     required: ["name"],
   },
-  handler: async (args: { name: string; schema?: string }) => {
+  handler: async (args: { name?: string; schema?: string }) => {
+    // Check if table name is provided
+    if (!args.name) {
+      return {
+        content: [{ type: "text", text: "Error: Table name is required" }],
+        isError: true,
+      };
+    }
+
     const db = await DatabaseService.create();
     try {
       // If schema is specified, use it directly
@@ -41,6 +50,13 @@ export const tool: Tool = {
           order by 
             c.ordinal_position
         `, [args.schema, args.name]);
+
+        if (rows.length === 0) {
+          return {
+            content: [{ type: "text", text: `Error: Table '${args.name}' not found in schema '${args.schema}'` }],
+            isError: true,
+          };
+        }
 
         return {
           content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
@@ -91,9 +107,22 @@ export const tool: Tool = {
           c.ordinal_position
       `, [args.name]);
 
+      if (rows.length === 0) {
+        return {
+          content: [{ type: "text", text: `Error: Table '${args.name}' not found` }],
+          isError: true,
+        };
+      }
+
       return {
         content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
         isError: false,
+      };
+    } catch (error) {
+      logger.error('Error in table_show:', error);
+      return {
+        content: [{ type: "text", text: `Error: ${error instanceof Error ? error.message : String(error)}` }],
+        isError: true,
       };
     } finally {
       await db.close();
