@@ -1,12 +1,12 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import { logger } from "../services/logger.js";
 import { DatabaseService } from "../services/database.js";
+import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
   name: "query_steampipe",
   description: `Query cloud and security logs with SQL.
   
-  Queries are read-only and must use DuckDB SQL syntax. 
+  Queries are read-only and must use PostgreSQL syntax. 
 
   Use table_list and table_show to discover available tables and columns.
   `,
@@ -14,13 +14,21 @@ export const tool: Tool = {
     type: "object",
     properties: {
       sql: {
-        type: "string"
+        type: "string",
+        description: "The SQL query to execute. Must use PostgreSQL syntax and be read-only."
       }
-    }
+    },
+    required: ["sql"],
+    additionalProperties: false
   },
-  handler: async (db: DatabaseService, args: { sql: string }) => {
-    logger.debug('Executing query_steampipe tool');
-    
+  handler: async (db: DatabaseService | undefined, args: { sql: string }) => {
+    if (!db) {
+      return {
+        content: [{ type: "text", text: JSON.stringify({ error: "Database not available" }, null, 2) }],
+        isError: true,
+      };
+    }
+
     try {
       const rows = await db.executeQuery(args.sql);
       
