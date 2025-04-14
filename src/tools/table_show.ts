@@ -30,8 +30,21 @@ export const tool: Tool = {
 
     const db = await DatabaseService.create();
     try {
-      // If schema is specified, use it directly
+      // If schema is specified, verify it exists first
       if (args.schema) {
+        const schemaExists = await db.executeQuery(`
+          SELECT 1 
+          FROM information_schema.schemata 
+          WHERE schema_name = $1
+        `, [args.schema]);
+
+        if (schemaExists.length === 0) {
+          return {
+            content: [{ type: "text", text: `Error: Schema '${args.schema}' not found` }],
+            isError: true,
+          };
+        }
+
         const rows = await db.executeQuery(`
           select 
             c.column_name,
