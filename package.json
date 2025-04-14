@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "ajv": "^8.17.1",
     "pg": "^8.11.3",
     "pg-types": "^4.0.2"
   },
@@ -49,16 +50,23 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "useESM": true,
-        "tsconfig": "tsconfig.test.json"
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true,
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
     },
-    "extensionsToTreatAsEsm": [".ts"]
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ]
   }
 }
