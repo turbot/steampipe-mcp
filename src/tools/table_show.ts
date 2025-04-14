@@ -20,25 +20,13 @@ export const tool: Tool = {
       }
     }
   },
-  handler: async (db: DatabaseService, args?: { name?: string; schema?: string }) => {
+  handler: async (db: DatabaseService, args: { name: string; schema?: string }) => {
     if (!db) {
       return {
         content: [{
           type: "text",
           text: JSON.stringify({
             error: "Database not available. Please ensure Steampipe is running and try again."
-          })
-        }],
-        isError: true
-      };
-    }
-
-    if (!args?.name) {
-      return {
-        content: [{
-          type: "text",
-          text: JSON.stringify({
-            error: "Table name is required"
           })
         }],
         isError: true
