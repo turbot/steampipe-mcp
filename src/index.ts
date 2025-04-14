@@ -4,7 +4,9 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
 import { setupTools } from "./tools/index.js";
-import { setupResources } from "./resources/index.js";
+import { setupPromptHandlers, promptCapabilities } from "./prompts/index.js";
+import { setupResourceHandlers, resourceCapabilities } from "./resources/index.js";
+import { setupResourceTemplateHandlers, resourceTemplateCapabilities } from "./resourceTemplates/index.js";
 import { logger } from "./services/logger.js";
 
 // Server metadata
@@ -33,13 +35,17 @@ export async function startServer(port: number = 27123) {
   const server = new Server(SERVER_INFO, {
     capabilities: {
       tools: { listChanged: false },
-      resources: { listChanged: false, subscribe: false },
+      prompts: promptCapabilities.prompts,
+      resources: resourceCapabilities.resources,
+      resourceTemplates: resourceTemplateCapabilities.resourceTemplates
     },
   });
 
   // Initialize handlers
   setupTools(server, db);
-  setupResources(server, db);
+  setupPromptHandlers(server);
+  setupResourceHandlers(server, db);
+  setupResourceTemplateHandlers(server);
 
   // Connect transport
   const transport = new StdioServerTransport();

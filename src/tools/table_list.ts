@@ -1,80 +1,79 @@
 import { DatabaseService } from "../services/database.js";
-import { type Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
   name: "table_list",
-  description: "List all unique tables in the database, excluding public and information_schema schemas",
+  description: "List all available Steampipe tables.",
   inputSchema: {
     type: "object",
     properties: {
-      filter: {
-        type: "string",
-        description: "Optional ILIKE pattern to filter table names (e.g. '%ec2%')",
-      },
       schema: {
         type: "string",
-        description: "Optional schema name to target table results",
+        description: "Optional schema name to filter tables by"
       },
-    },
-  },
-  handler: async (db: DatabaseService | undefined, args?: { schema?: string; filter?: string }) => {
-    try {
-      // Check if database is available
-      if (!db) {
-        return {
-          content: [{ type: "text", text: "Error: Database not available. Please ensure Steampipe service is running." }],
-          isError: true,
-        };
+      filter: {
+        type: "string",
+        description: "Optional filter pattern to match against table names"
       }
+    }
+  },
+  handler: async (db: DatabaseService, args?: { schema?: string; filter?: string }) => {
+    if (!db) {
+      return {
+        error: "Database not available. Please ensure Steampipe is running and try again."
+      };
+    }
 
-      // If schema is specified, verify it exists first
+    try {
+      // Check if schema exists if specified
       if (args?.schema) {
-        const schemaExists = await db.executeQuery(`
-          SELECT 1 
+        const schemaQuery = `
+          SELECT schema_name 
           FROM information_schema.schemata 
           WHERE schema_name = $1
-        `, [args.schema]);
-
-        if (schemaExists.length === 0) {
+        `;
+        const schemaResult = await db.executeQuery(schemaQuery, [args.schema]);
+        if (schemaResult.length === 0) {
           return {
-            content: [{ type: "text", text: `Error: Schema '${args.schema}' not found` }],
-            isError: true,
+            error: `Schema '${args.schema}' not found`
           };
         }
       }
 
-      const rows = await db.executeQuery(`
-        WITH ordered_tables AS (
-          SELECT DISTINCT ON (t.table_name)
-            t.table_schema as schema,
-            t.table_name as name,
-            pg_catalog.obj_description(format('%I.%I', t.table_schema, t.table_name)::regclass::oid, 'pg_class') as description,
-            array_position(current_schemas(false), t.table_schema) as schema_order
-          FROM information_schema.tables t
-          WHERE t.table_schema NOT IN ('information_schema', 'pg_catalog', 'public')
-            AND ($1::text IS NULL OR t.table_schema = $1)
-            AND ($2::text IS NULL OR t.table_name ILIKE $2)
-          ORDER BY t.table_name, schema_order NULLS LAST
-        )
-        SELECT 
-          schema,
-          name,
-          description
-        FROM ordered_tables
-        ORDER BY name;
-      `, [args?.schema || null, args?.filter || null]);
+      // Build the query based on provided arguments
+      let query = `
+        SELECT DISTINCT 
+          table_schema as schema,
+          table_name as name,
+          table_type as type
+        FROM information_schema.tables
+        WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+      `;
 
+      const params: any[] = [];
+      let paramIndex = 1;
+
+      if (args?.schema) {
+        query += ` AND table_schema = $${paramIndex}`;
+        params.push(args.schema);
+        paramIndex++;
+      }
+
+      if (args?.filter) {
+        query += ` AND table_name ILIKE $${paramIndex}`;
+        params.push(`%${args.filter}%`);
+      }
+
+      query += " ORDER BY table_schema, table_name";
+
+      const result = await db.executeQuery(query, params);
+      return { tables: result };
+    } catch (err) {
+      logger.error("Error listing tables:", err);
       return {
-        content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
-        isError: false,
-      };
-    } catch (error) {
-      logger.error('Error in table_list:', error);
-      return {
-        content: [{ type: "text", text: `Error: ${error instanceof Error ? error.message : String(error)}` }],
-        isError: true,
+        error: "Failed to list tables. Please check the logs for more details."
       };
     }
-  },
+  }
 }; 
