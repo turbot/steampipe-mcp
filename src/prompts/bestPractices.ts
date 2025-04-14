@@ -1,6 +1,8 @@
 import type { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
-export const prompt: Prompt = {
+type PromptHandler = () => Promise<{ content: Array<{ type: string; text: string }> }>;
+
+export const prompt: Prompt & { handler: PromptHandler } = {
   name: "list_tables",
   description: "List available tables in the database",
   handler: async () => {

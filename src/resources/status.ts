@@ -1,11 +1,19 @@
 import { DatabaseService } from "../services/database.js";
 import type { Resource } from "@modelcontextprotocol/sdk/types.js";
 
-export const resource: Resource = {
+type ResourceHandler = (db: DatabaseService) => Promise<{
+  contents: Array<{
+    uri: string;
+    mimeType: string;
+    text: string;
+  }>;
+}>;
+
+export const resource: Resource & { handler: ResourceHandler } = {
   uri: "steampipe://status",
   name: "status",
   type: "status",
-  description: "Status of the Steampipe database connection",
+  description: "Get the current status of the Steampipe connection",
   handler: async (db: DatabaseService) => {
     return {
       contents: [{
