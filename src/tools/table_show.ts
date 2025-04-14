@@ -7,20 +7,19 @@ export const tool: Tool = {
   description: "Get detailed information about a specific Steampipe table.",
   inputSchema: {
     type: "object",
-    additionalProperties: false,
-    required: ["name"],
     properties: {
       name: {
         type: "string",
-        description: "The name of the table to show details for. Can be schema qualified (e.g. 'aws_account' or 'aws.aws_account')."
+        description: "Name of the table to show details for"
       },
       schema: {
         type: "string",
-        description: "Optional schema name. If provided, only searches in this schema. If not provided, searches across all schemas."
+        description: "Optional schema name to search in"
       }
-    }
+    },
+    required: ["name"]
   },
-  handler: async (db: DatabaseService, args?: { name?: string; schema?: string }) => {
+  handler: async (db: DatabaseService, args?: { name: string; schema?: string }) => {
     if (!db) {
       return {
         error: "Database not available. Please ensure Steampipe is running and try again."

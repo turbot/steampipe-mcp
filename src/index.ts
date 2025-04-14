@@ -3,7 +3,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
-import { setupTools } from "./tools/index.js";
+import { setupTools, tools } from "./tools/index.js";
 import { setupPromptHandlers, promptCapabilities } from "./prompts/index.js";
 import { setupResourceHandlers, resourceCapabilities } from "./resources/index.js";
 import { setupResourceTemplateHandlers, resourceTemplateCapabilities } from "./resourceTemplates/index.js";
@@ -34,7 +34,7 @@ export async function startServer(port: number = 27123) {
   // Initialize server
   const server = new Server(SERVER_INFO, {
     capabilities: {
-      tools: { listChanged: false },
+      tools,
       prompts: promptCapabilities.prompts,
       resources: resourceCapabilities.resources,
       resourceTemplates: resourceTemplateCapabilities.resourceTemplates

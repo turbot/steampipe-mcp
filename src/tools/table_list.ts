@@ -7,15 +7,14 @@ export const tool: Tool = {
   description: "List all available Steampipe tables.",
   inputSchema: {
     type: "object",
-    additionalProperties: false,
     properties: {
       schema: {
         type: "string",
-        description: "Optional schema name to filter tables by. If not provided, lists tables from all schemas."
+        description: "Optional schema name to filter tables by"
       },
       filter: {
         type: "string",
-        description: "Optional text to filter table names by. Case-insensitive partial match."
+        description: "Optional filter pattern to match against table names"
       }
     }
   },
