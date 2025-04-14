@@ -24,9 +24,7 @@ export const tool: Tool = {
       return {
         content: [{
           type: "text",
-          text: JSON.stringify({
-            error: "Database not available. Please ensure Steampipe is running and try again."
-          })
+          text: "Database not available. Please ensure Steampipe is running and try again."
         }],
         isError: true
       };
@@ -45,9 +43,7 @@ export const tool: Tool = {
           return {
             content: [{
               type: "text",
-              text: JSON.stringify({
-                error: `Schema '${args.schema}' not found`
-              })
+              text: `Schema '${args.schema}' not found`
             }],
             isError: true
           };
@@ -92,9 +88,7 @@ export const tool: Tool = {
       return {
         content: [{
           type: "text",
-          text: JSON.stringify({
-            error: "Failed to list tables. Please check the logs for more details."
-          })
+          text: "Failed to list tables. Please check the logs for more details."
         }],
         isError: true
       };
