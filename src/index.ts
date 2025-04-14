@@ -53,3 +53,6 @@ export async function startServer(port: number = 27123) {
 
   logger.info(`Server started on port ${port}`);
 }
+
+// Start the server
+startServer();
