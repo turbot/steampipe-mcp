@@ -18,8 +18,16 @@ export const tool: Tool = {
       },
     },
   },
-  handler: async (db: DatabaseService, args?: { schema?: string; filter?: string }) => {
+  handler: async (db: DatabaseService | undefined, args?: { schema?: string; filter?: string }) => {
     try {
+      // Check if database is available
+      if (!db) {
+        return {
+          content: [{ type: "text", text: "Error: Database not available. Please ensure Steampipe service is running." }],
+          isError: true,
+        };
+      }
+
       // If schema is specified, verify it exists first
       if (args?.schema) {
         const schemaExists = await db.executeQuery(`
