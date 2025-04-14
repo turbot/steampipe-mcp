@@ -58,7 +58,8 @@ export const tool: Tool = {
       let query = `
         SELECT DISTINCT 
           table_schema as schema,
-          table_name as name
+          table_name as name,
+          obj_description(format('%I.%I', table_schema, table_name)::regclass::oid, 'pg_class') as description
         FROM information_schema.tables
         WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
       `;
