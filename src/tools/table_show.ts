@@ -7,28 +7,41 @@ export const tool: Tool = {
   description: "Get detailed information about a specific Steampipe table.",
   inputSchema: {
     type: "object",
+    additionalProperties: false,
+    required: ["name"],
     properties: {
       name: {
         type: "string",
-        description: "Name of the table to show details for"
+        description: "The name of the table to show details for. Can be schema qualified (e.g. 'aws_account' or 'aws.aws_account')."
       },
       schema: {
         type: "string",
-        description: "Optional schema name to search in"
+        description: "Optional schema name. If provided, only searches in this schema. If not provided, searches across all schemas."
       }
-    },
-    required: ["name"]
+    }
   },
-  handler: async (db: DatabaseService, args?: { name: string; schema?: string }) => {
+  handler: async (db: DatabaseService, args?: { name?: string; schema?: string }) => {
     if (!db) {
       return {
-        error: "Database not available. Please ensure Steampipe is running and try again."
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: "Database not available. Please ensure Steampipe is running and try again."
+          })
+        }],
+        isError: true
       };
     }
 
     if (!args?.name) {
       return {
-        error: "Table name is required"
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: "Table name is required"
+          })
+        }],
+        isError: true
       };
     }
 
@@ -43,78 +56,98 @@ export const tool: Tool = {
         const schemaResult = await db.executeQuery(schemaQuery, [args.schema]);
         if (schemaResult.length === 0) {
           return {
-            error: `Schema '${args.schema}' not found`
+            content: [{
+              type: "text",
+              text: JSON.stringify({
+                error: `Schema '${args.schema}' not found`
+              })
+            }],
+            isError: true
           };
         }
       }
 
-      // Build the query based on whether schema is specified
-      let query;
-      let params: any[];
+      // Build the query based on provided arguments
+      let query = `
+        SELECT 
+          t.table_schema as schema,
+          t.table_name as name,
+          t.table_type as type,
+          c.column_name,
+          c.data_type,
+          c.is_nullable,
+          c.column_default,
+          c.character_maximum_length,
+          c.numeric_precision,
+          c.numeric_scale,
+          col_description(format('%I.%I', t.table_schema, t.table_name)::regclass::oid, c.ordinal_position) as description
+        FROM information_schema.tables t
+        LEFT JOIN information_schema.columns c 
+          ON c.table_schema = t.table_schema 
+          AND c.table_name = t.table_name
+        WHERE t.table_schema NOT IN ('information_schema', 'pg_catalog')
+      `;
+
+      const params: any[] = [];
+      let paramIndex = 1;
 
       if (args.schema) {
-        // If schema is specified, look in that schema only
-        query = `
-          SELECT 
-            c.table_schema as schema,
-            c.table_name as name,
-            c.column_name as column_name,
-            c.data_type as data_type,
-            c.is_nullable as is_nullable,
-            c.column_default as column_default,
-            c.ordinal_position as ordinal_position,
-            pg_catalog.col_description(format('%I.%I', c.table_schema, c.table_name)::regclass::oid, c.ordinal_position) as description
-          FROM information_schema.columns c
-          WHERE c.table_schema = $1
-          AND c.table_name = $2
-          ORDER BY c.ordinal_position
-        `;
-        params = [args.schema, args.name];
-      } else {
-        // If no schema specified, search across all non-system schemas
-        query = `
-          SELECT 
-            c.table_schema as schema,
-            c.table_name as name,
-            c.column_name as column_name,
-            c.data_type as data_type,
-            c.is_nullable as is_nullable,
-            c.column_default as column_default,
-            c.ordinal_position as ordinal_position,
-            pg_catalog.col_description(format('%I.%I', c.table_schema, c.table_name)::regclass::oid, c.ordinal_position) as description
-          FROM information_schema.columns c
-          WHERE c.table_schema NOT IN ('information_schema', 'pg_catalog')
-          AND c.table_name = $1
-          ORDER BY c.table_schema, c.ordinal_position
-        `;
-        params = [args.name];
+        query += ` AND t.table_schema = $${paramIndex}`;
+        params.push(args.schema);
+        paramIndex++;
       }
+
+      query += ` AND t.table_name = $${paramIndex}`;
+      params.push(args.name);
+
+      query += " ORDER BY c.ordinal_position";
 
       const result = await db.executeQuery(query, params);
       if (result.length === 0) {
         return {
-          error: args.schema 
-            ? `Table '${args.name}' not found in schema '${args.schema}'`
-            : `Table '${args.name}' not found in any schema`
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              error: `Table '${args.name}' not found${args.schema ? ` in schema '${args.schema}'` : ''}`
+            })
+          }],
+          isError: true
         };
       }
 
-      return { 
+      // Format the result into table and columns structure
+      const table = {
         schema: result[0].schema,
         name: result[0].name,
-        columns: result.map(col => ({
-          name: col.column_name,
-          type: col.data_type,
-          nullable: col.is_nullable === 'YES',
-          default: col.column_default,
-          position: col.ordinal_position,
-          description: col.description
+        type: result[0].type,
+        columns: result.map(row => ({
+          name: row.column_name,
+          type: row.data_type,
+          nullable: row.is_nullable === 'YES',
+          default: row.column_default,
+          ...(row.character_maximum_length && { character_maximum_length: row.character_maximum_length }),
+          ...(row.numeric_precision && { numeric_precision: row.numeric_precision }),
+          ...(row.numeric_scale && { numeric_scale: row.numeric_scale }),
+          ...(row.description && { description: row.description })
         }))
+      };
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ table })
+        }]
       };
     } catch (err) {
       logger.error("Error showing table details:", err);
       return {
-        error: "Failed to get table details. Please check the logs for more details."
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: "Failed to get table details. Please check the logs for more details."
+          })
+        }],
+        isError: true
       };
     }
   }
