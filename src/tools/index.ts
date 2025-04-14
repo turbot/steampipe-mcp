@@ -65,9 +65,7 @@ export function setupTools(server: Server, db: DatabaseService) {
         return {
           content: [{
             type: "text",
-            text: JSON.stringify({
-              error: `Invalid arguments for tool ${name}: ${ajv.errorsText(validate.errors)}`
-            }, null, 2)
+            text: `Invalid arguments for tool ${name}: ${ajv.errorsText(validate.errors)}`
           }],
           isError: true
         };
