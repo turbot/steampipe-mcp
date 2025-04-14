@@ -7,21 +7,28 @@ export const tool: Tool = {
   description: "List all available Steampipe tables.",
   inputSchema: {
     type: "object",
+    additionalProperties: false,
     properties: {
       schema: {
         type: "string",
-        description: "Optional schema name to filter tables by"
+        description: "Optional schema name to filter tables by. If not provided, lists tables from all schemas."
       },
       filter: {
         type: "string",
-        description: "Optional filter pattern to match against table names"
+        description: "Optional filter pattern to match against table names. Use % as wildcard."
       }
     }
   },
   handler: async (db: DatabaseService, args?: { schema?: string; filter?: string }) => {
     if (!db) {
       return {
-        error: "Database not available. Please ensure Steampipe is running and try again."
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: "Database not available. Please ensure Steampipe is running and try again."
+          })
+        }],
+        isError: true
       };
     }
 
@@ -36,7 +43,13 @@ export const tool: Tool = {
         const schemaResult = await db.executeQuery(schemaQuery, [args.schema]);
         if (schemaResult.length === 0) {
           return {
-            error: `Schema '${args.schema}' not found`
+            content: [{
+              type: "text",
+              text: JSON.stringify({
+                error: `Schema '${args.schema}' not found`
+              })
+            }],
+            isError: true
           };
         }
       }
@@ -62,17 +75,28 @@ export const tool: Tool = {
 
       if (args?.filter) {
         query += ` AND table_name ILIKE $${paramIndex}`;
-        params.push(`%${args.filter}%`);
+        params.push(args.filter); // Use the filter pattern as-is since it already includes wildcards
       }
 
       query += " ORDER BY table_schema, table_name";
 
       const result = await db.executeQuery(query, params);
-      return { tables: result };
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ tables: result })
+        }]
+      };
     } catch (err) {
       logger.error("Error listing tables:", err);
       return {
-        error: "Failed to list tables. Please check the logs for more details."
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            error: "Failed to list tables. Please check the logs for more details."
+          })
+        }],
+        isError: true
       };
     }
   }
