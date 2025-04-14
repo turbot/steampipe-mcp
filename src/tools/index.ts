@@ -7,18 +7,12 @@ import { tool as queryTool } from './query_steampipe.js';
 import { tool as reconnectTool } from './reconnect_steampipe.js';
 
 // Data Structure Operations
-import { tool as partitionListTool } from './partition_list.js';
-import { tool as partitionShowTool } from './partition_show.js';
 import { tool as tableListTool } from './table_list.js';
 import { tool as tableShowTool } from './table_show.js';
 
 // Plugin Operations
 import { tool as pluginListTool } from './plugin_list.js';
 import { tool as pluginShowTool } from './plugin_show.js';
-
-// Source Operations
-import { tool as sourceListTool } from './source_list.js';
-import { tool as sourceShowTool } from './source_show.js';
 
 // Export all tools for server capabilities
 export const tools = {
@@ -27,18 +21,12 @@ export const tools = {
   reconnect_steampipe: reconnectTool,  // Database connection management
 
   // Data Structure Operations
-  partition_list: partitionListTool,  // List available partitions
-  partition_show: partitionShowTool,  // Show partition details
   table_list: tableListTool,         // List available tables
   table_show: tableShowTool,         // Show table details
 
   // Plugin Operations
   plugin_list: pluginListTool,       // List available plugins
   plugin_show: pluginShowTool,       // Show plugin details
-
-  // Source Operations
-  source_list: sourceListTool,       // List available sources
-  source_show: sourceShowTool        // Show source details
 };
 
 // Initialize tool handlers
