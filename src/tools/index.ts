@@ -62,10 +62,29 @@ export function setupTools(server: Server, db: DatabaseService) {
       const validate = ajv.compile(tool.inputSchema);
       if (!validate(args)) {
         logger.error(`Invalid arguments for tool ${name}:`, validate.errors);
+        
+        // Format validation errors in a user-friendly way
+        const errors = validate.errors || [];
+        const errorMessages = errors.map(err => {
+          const path = err.instancePath.replace(/^\//, '') || 'input';
+          switch (err.keyword) {
+            case 'required':
+              return `Missing required field: ${err.params.missingProperty}`;
+            case 'type':
+              return `${path} must be a ${err.params.type}`;
+            case 'enum':
+              return `${path} must be one of: ${err.params.allowedValues?.join(', ')}`;
+            case 'additionalProperties':
+              return `Unexpected field: ${err.params.additionalProperty}`;
+            default:
+              return `${path}: ${err.message}`;
+          }
+        });
+
         return {
           content: [{
             type: "text",
-            text: `Invalid arguments for tool ${name}: ${ajv.errorsText(validate.errors)}`
+            text: `Invalid arguments for ${name}:\n${errorMessages.join('\n')}`
           }],
           isError: true
         };
