@@ -15,13 +15,9 @@ import { tool as pluginShowTool } from './plugin_show.js';
 const Ajv = AjvModule.default || AjvModule;
 const ajv = new Ajv();
 
-// Define tool types
+// Define tool type
 type DbTool = Tool & {
   handler: (db: DatabaseService, args: any) => Promise<ServerResult>;
-};
-
-type StandardTool = Tool & {
-  handler: (args: any) => Promise<ServerResult>;
 };
 
 // Export all tools for server capabilities
@@ -29,8 +25,8 @@ export const tools = {
   query_steampipe: queryTool as DbTool,
   table_list: tableListTool as DbTool,
   table_show: tableShowTool as DbTool,
-  plugin_list: pluginListTool as StandardTool,
-  plugin_show: pluginShowTool as StandardTool,
+  plugin_list: pluginListTool as DbTool,
+  plugin_show: pluginShowTool as DbTool,
 } as const;
 
 // Initialize tool handlers
@@ -90,12 +86,8 @@ export function setupTools(server: Server, db: DatabaseService) {
         }
       }
 
-      // Call the tool handler with database for db tools
-      if (name === 'query_steampipe' || name === 'table_list' || name === 'table_show') {
-        return await (tool as DbTool).handler(db, args);
-      }
-
-      return await (tool as StandardTool).handler(args);
+      // Call the tool handler with database
+      return await (tool as DbTool).handler(db, args);
     } catch (error) {
       logger.error('Error executing tool:', error);
       return {

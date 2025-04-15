@@ -1,47 +1,52 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { logger } from "../services/logger.js";
-import { executeCommand, formatCommandError } from "../utils/command.js";
-import { buildSteampipeCommand, getSteampipeEnv } from "../utils/steampipe.js";
-import { formatListResult } from "../utils/format.js";
-
-interface Plugin {
-  Name: string;
-  Partitions: string[] | null;
-  Version: string;
-}
-
-function parsePlugins(output: string): Plugin[] {
-  const rawPlugins = JSON.parse(output);
-  if (!Array.isArray(rawPlugins)) {
-    throw new Error('Expected array output from Tailpipe CLI');
-  }
-
-  return rawPlugins.map(plugin => ({
-    Name: plugin.Name || '',
-    Partitions: Array.isArray(plugin.Partitions) ? plugin.Partitions : null,
-    Version: plugin.Version || ''
-  }));
-}
+import { DatabaseService } from "../services/database.js";
 
 export const tool: Tool = {
   name: "plugin_list",
-  description: "List all Tailpipe plugins installed on the system.",
+  description: "List all Steampipe plugins installed on the system.",
   inputSchema: {
     type: "object",
     properties: {},
     additionalProperties: false
   },
-  handler: async () => {
-    logger.debug('Executing plugin_list tool');
-    const cmd = buildSteampipeCommand('plugin list', { output: 'json' });
-    
+  handler: async (db: DatabaseService) => {
+    if (!db) {
+      return {
+        content: [{
+          type: "text",
+          text: "Database not available. Please ensure Steampipe is running and try again."
+        }],
+        isError: true
+      };
+    }
+
     try {
-      const output = executeCommand(cmd, { env: getSteampipeEnv() });
-      const plugins = parsePlugins(output);
-      return formatListResult(plugins, 'plugins', cmd);
-    } catch (error) {
-      logger.error('Failed to execute plugin_list tool:', error instanceof Error ? error.message : String(error));
-      return formatCommandError(error, cmd);
+      const query = `
+        SELECT 
+          plugin,
+          version
+        FROM steampipe_plugin
+        ORDER BY plugin
+      `;
+
+      const result = await db.executeQuery(query);
+      
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ plugins: result })
+        }]
+      };
+    } catch (err) {
+      logger.error("Error listing plugins:", err);
+      return {
+        content: [{
+          type: "text",
+          text: `Failed to list plugins: ${err instanceof Error ? err.message : String(err)}`
+        }],
+        isError: true
+      };
     }
   }
 }; 
