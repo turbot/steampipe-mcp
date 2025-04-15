@@ -81,6 +81,7 @@ Add the following configuration to the "mcpServers" section of your `claude_desk
     "steampipe": {
       "command": "npx",
       "args": [
+        "-y",
         "@turbot/steampipe-mcp"
       ]
     }
@@ -98,6 +99,7 @@ To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add 
     "steampipe": {
       "command": "npx",
       "args": [
+        "-y",
         "@turbot/steampipe-mcp",
         "postgresql://username:password@my-workspace.turbot.io:5432/steampipe"
       ]
@@ -122,9 +124,11 @@ To install the Steampipe MCP server in Cursor:
    {
      "mcpServers": {
        "steampipe": {
-         "name": "Steampipe",
-         "description": "Query Steampipe data",
-         "server": "@turbot/steampipe-mcp"
+         "command": "npx",
+         "args": [
+           "-y",
+           "@turbot/steampipe-mcp"
+         ]
        }
      }
    }
@@ -136,10 +140,12 @@ To install the Steampipe MCP server in Cursor:
    {
      "mcpServers": {
        "steampipe": {
-         "name": "Steampipe",
-         "description": "Query Steampipe data",
-         "server": "@turbot/steampipe-mcp",
-         "args": ["postgresql://username:password@my-workspace.turbot.io:5432/steampipe"]
+         "command": "npx",
+         "args": [
+           "-y",
+           "@turbot/steampipe-mcp",
+           "postgresql://username:password@my-workspace.turbot.io:5432/steampipe"
+         ]
        }
      }
    }
