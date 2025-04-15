@@ -101,57 +101,51 @@ To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add 
       "args": [
         "-y",
         "@turbot/steampipe-mcp",
-        "postgresql://username:abc1-2def-3ghi@workspace-name.usea1.db.pipes.turbot.com:9193/steampipe"
+        "postgresql://my_name:my_pw@workspace-name.usea1.db.pipes.turbot.com:9193/abc123"
       ]
     }
   }
 }
 ```
 
+Save the configuration file and restart Claude Desktop for the changes to take effect.
+
 ### Cursor
 
-To install the Steampipe MCP server in Cursor:
+Open your Cursor MCP configuration file at `~/.cursor/mcp.json` and add the following configuration to the "mcpServers" section:
 
-1. Open your Cursor MCP configuration file:
-   ```sh
-   open ~/.cursor/mcp.json  # On macOS
-   # or
-   code ~/.cursor/mcp.json  # Using VS Code
-   ```
+```json
+{
+  "mcpServers": {
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp"
+      ]
+    }
+  }
+}
+```
 
-2. Add the following configuration:
-   ```json
-   {
-     "mcpServers": {
-       "steampipe": {
-         "command": "npx",
-         "args": [
-           "-y",
-           "@turbot/steampipe-mcp"
-         ]
-       }
-     }
-   }
-   ```
+By default, this will connect to your local Steampipe installation. To connect to a Turbot Pipes workspace instead:
 
-   By default, this will connect to your local Steampipe installation. To connect to a Turbot Pipes workspace instead:
+```json
+{
+  "mcpServers": {
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp",
+        "postgresql://my_name:my_pw@workspace-name.usea1.db.pipes.turbot.com:9193/abc123"
+      ]
+    }
+  }
+}
+```
 
-   ```json
-   {
-     "mcpServers": {
-       "steampipe": {
-         "command": "npx",
-         "args": [
-           "-y",
-           "@turbot/steampipe-mcp",
-           "postgresql://username:abc1-2def-3ghi@workspace-name.usea1.db.pipes.turbot.com:9193/steampipe"
-         ]
-       }
-     }
-   }
-   ```
-
-3. Save the configuration file and restart Cursor for the changes to take effect.
+Save the configuration file and restart Cursor for the changes to take effect.
 
 ## Prompting Guide
 
