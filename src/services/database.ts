@@ -46,7 +46,7 @@ export class DatabaseService {
   private constructor() {
     // Set default config
     this.config = {
-      connectionString: process.env.DATABASE_URL || 'postgresql://steampipe@localhost:9193/steampipe',
+      connectionString: process.env.STEAMPIPE_MCP_WORKSPACE_DATABASE || 'postgresql://steampipe@localhost:9193/steampipe',
       sourceType: 'steampipe'
     };
   }
