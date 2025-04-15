@@ -17,20 +17,6 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 
 ## Components
 
-### Prompts
-
-- **best_practices**
-  - Best practices for working with Steampipe data
-  - Provides detailed guidance on:
-    - Response style and formatting conventions
-    - Using CTEs (WITH clauses) vs joins
-    - SQL syntax and style conventions
-    - Column selection and optimization
-    - Schema exploration and understanding
-    - Query structure and organization
-    - Performance considerations and caching
-    - Error handling and troubleshooting
-
 ### Tools
 
 - **query_steampipe**
@@ -55,6 +41,20 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 - **plugin_show**
   - Get details for a specific Steampipe plugin installation
   - Input: `name` (string): Name of the plugin to show details for
+
+### Prompts
+
+- **best_practices**
+  - Best practices for working with Steampipe data
+  - Provides detailed guidance on:
+    - Response style and formatting conventions
+    - Using CTEs (WITH clauses) vs joins
+    - SQL syntax and style conventions
+    - Column selection and optimization
+    - Schema exploration and understanding
+    - Query structure and organization
+    - Performance considerations and caching
+    - Error handling and troubleshooting
 
 ### Resources
 
@@ -210,17 +210,12 @@ npm install
 npm run build
 ```
 
-4. For development with auto-recompilation:
-```sh
-npm run watch
-```
-
-5. To test locally, ensure Steampipe is running and then:
+4. To test locally, ensure Steampipe is running and then:
 ```sh
 node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
-6. To use your local development version with Cursor, update your `mcp.json`:
+5. To use your local development version with Cursor, update your `mcp.json`:
 ```json
 {
   "mcpServers": {
