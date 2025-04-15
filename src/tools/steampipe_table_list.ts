@@ -4,7 +4,7 @@ import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
   name: "steampipe_table_list",
-  description: "List all available Steampipe tables.",
+  description: "List all available Steampipe tables. Use schema and filter parameters to narrow down results.",
   inputSchema: {
     type: "object",
     additionalProperties: false,
@@ -15,7 +15,7 @@ export const tool: Tool = {
       },
       filter: {
         type: "string",
-        description: "Optional filter pattern to match against table names. Use % as wildcard."
+        description: "Optional filter pattern to match against table names. Use ILIKE syntax, including % as a wildcard."
       }
     }
   },

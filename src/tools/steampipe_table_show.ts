@@ -4,7 +4,7 @@ import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
   name: "steampipe_table_show",
-  description: "Get detailed information about a specific Steampipe table.",
+  description: "Get detailed information about a specific Steampipe table, including column definitions, data types, and descriptions.",
   inputSchema: {
     type: "object",
     additionalProperties: false,

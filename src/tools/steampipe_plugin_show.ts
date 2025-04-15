@@ -4,7 +4,7 @@ import { DatabaseService } from "../services/database.js";
 
 export const tool: Tool = {
   name: "steampipe_plugin_show",
-  description: "Get details for a specific Steampipe plugin installation.",
+  description: "Get details for a specific Steampipe plugin installation, including version, memory limits, and configuration.",
   inputSchema: {
     type: "object",
     properties: {

@@ -4,7 +4,7 @@ import { DatabaseService } from "../services/database.js";
 
 export const tool: Tool = {
   name: "steampipe_plugin_list",
-  description: "List all Steampipe plugins installed on the system.",
+  description: "List all Steampipe plugins installed on the system. Plugins provide access to different data sources like AWS, GCP, or Azure.",
   inputSchema: {
     type: "object",
     properties: {},
