@@ -101,7 +101,7 @@ To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add 
       "args": [
         "-y",
         "@turbot/steampipe-mcp",
-        "postgresql://username:password@my-workspace.turbot.io:5432/steampipe"
+        "postgresql://username:abc1-2def-3ghi@workspace-name.usea1.db.pipes.turbot.com:9193/steampipe"
       ]
     }
   }
@@ -144,7 +144,7 @@ To install the Steampipe MCP server in Cursor:
          "args": [
            "-y",
            "@turbot/steampipe-mcp",
-           "postgresql://username:password@my-workspace.turbot.io:5432/steampipe"
+           "postgresql://username:abc1-2def-3ghi@workspace-name.usea1.db.pipes.turbot.com:9193/steampipe"
          ]
        }
      }
