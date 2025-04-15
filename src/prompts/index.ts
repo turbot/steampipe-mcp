@@ -1,6 +1,6 @@
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { GetPromptRequestSchema, ListPromptsRequestSchema, type Prompt } from "@modelcontextprotocol/sdk/types.js";
-import { prompt as bestPracticesPrompt } from "./bestPractices.js";
+import { prompt as bestPracticesPrompt } from "./best_practices.js";
 import { logger } from "../services/logger.js";
 
 // Register all available prompts
