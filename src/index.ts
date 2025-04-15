@@ -19,7 +19,7 @@ const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8
 
 // Server metadata
 const SERVER_INFO = {
-  name: pkg.name.replace('@turbot/', ''),
+  name: "steampipe",
   version: pkg.version,
   description: pkg.description,
   vendor: pkg.author,
