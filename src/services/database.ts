@@ -6,17 +6,12 @@ import pkg from 'pg';
 const { Client, Pool } = pkg;
 import type { Pool as PoolType, PoolClient } from 'pg';
 
-export type DatabaseSourceType = 'steampipe' | 'connection_string' | 'unknown';
-
 export interface DatabaseConfig {
   connectionString: string;
-  sourceType: DatabaseSourceType;
 }
 
 export interface DatabaseConnectionInfo {
   connectionString: string;
-  source: string;
-  sourceType: DatabaseSourceType;
 }
 
 export class DatabaseService {
@@ -24,7 +19,6 @@ export class DatabaseService {
   private pool: PoolType | null = null;
   private _isConnected = false;
   private _connectionString: string | null = null;
-  private _sourceType: DatabaseSourceType | null = null;
   private config: DatabaseConfig;
 
   /**
@@ -46,8 +40,7 @@ export class DatabaseService {
   private constructor() {
     // Set default config
     this.config = {
-      connectionString: process.env.STEAMPIPE_MCP_WORKSPACE_DATABASE || 'postgresql://steampipe@localhost:9193/steampipe',
-      sourceType: 'steampipe'
+      connectionString: process.env.STEAMPIPE_MCP_WORKSPACE_DATABASE || 'postgresql://steampipe@localhost:9193/steampipe'
     };
   }
 
@@ -58,7 +51,6 @@ export class DatabaseService {
       // Reset connection state since the pool is now invalid
       this._isConnected = false;
       this._connectionString = null;
-      this._sourceType = null;
       this.pool = null;
     });
   }
@@ -78,16 +70,8 @@ export class DatabaseService {
     return this._connectionString;
   }
 
-  get sourceType(): DatabaseSourceType | null {
-    return this._sourceType;
-  }
-
   get configConnectionString(): string {
     return this.config.connectionString;
-  }
-
-  get configSourceType(): DatabaseSourceType {
-    return this.config.sourceType;
   }
 
   /**
@@ -98,7 +82,6 @@ export class DatabaseService {
     // Reset connection state since config changed
     this._isConnected = false;
     this._connectionString = null;
-    this._sourceType = null;
     if (this.pool) {
       // Close existing connection if any
       this.pool.end().catch(err => {
@@ -163,12 +146,10 @@ export class DatabaseService {
       
       this._isConnected = true;
       this._connectionString = this.config.connectionString;
-      this._sourceType = this.config.sourceType;
       logger.debug('Successfully connected to database');
     } catch (error) {
       this._isConnected = false;
       this._connectionString = null;
-      this._sourceType = null;
       if (this.pool) {
         await this.pool.end().catch(err => {
           logger.error('Error closing pool during error handling:', err);
@@ -291,6 +272,5 @@ export class DatabaseService {
     }
     this._isConnected = false;
     this._connectionString = null;
-    this._sourceType = null;
   }
 }

@@ -17,7 +17,6 @@ export const resource: Resource & { handler: ResourceHandler } = {
   handler: async (db: DatabaseService) => {
     // Get the current config and connection state
     const connectionString = db.configConnectionString;
-    const sourceType = db.configSourceType;
     const isConnected = db.isConnected;
 
     return {
@@ -26,7 +25,6 @@ export const resource: Resource & { handler: ResourceHandler } = {
         mimeType: "application/json",
         text: JSON.stringify({
           connection_string: connectionString,
-          source: sourceType,
           status: isConnected ? "connected" : "disconnected"
         }, null, 2)
       }]

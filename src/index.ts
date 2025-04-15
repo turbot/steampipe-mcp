@@ -32,6 +32,15 @@ export async function startServer(port: number = 27123) {
     // Get database service instance (but don't connect yet)
     const db = DatabaseService.getInstance();
 
+    // Set connection string from command line if provided
+    const connectionString = process.argv[2];
+    if (connectionString) {
+      db.setConfig({
+        connectionString
+      });
+      logger.info('Using connection string from command line argument');
+    }
+
     // Initialize server
     logger.info('Creating MCP server instance...');
     const serverStartTime = Date.now();
