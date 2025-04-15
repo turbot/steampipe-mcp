@@ -20,6 +20,23 @@ const SERVER_INFO = {
 
 let serverStartTime: Date;
 
+// Handle graceful shutdown
+function setupShutdownHandlers(db: DatabaseService) {
+  const gracefulShutdown = async () => {
+    if (db) {
+      try {
+        await db.close();
+      } catch (error) {
+        // Note: Avoid logging during shutdown as it may interfere with MCP protocol
+        process.exit(1);
+      }
+    }
+    process.exit(0);
+  };
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
+}
+
 export function getServerStartTime(): Date {
   return serverStartTime;
 }
@@ -40,6 +57,10 @@ export async function startServer(port: number = 27123) {
       });
       logger.info('Using connection string from command line argument');
     }
+
+    // Set up shutdown handlers
+    setupShutdownHandlers(db);
+    logger.info('Shutdown handlers configured');
 
     // Initialize server
     logger.info('Creating MCP server instance...');
