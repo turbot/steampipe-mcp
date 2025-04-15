@@ -39,6 +39,14 @@ export const tools = {
 
 // Initialize tool handlers
 export function setupTools(server: Server, db: DatabaseService) {
+  logger.info('Setting up tools with database service:', db);
+  try {
+    const connectionString = db.connectionString;
+    logger.info('Initial database connection string:', connectionString);
+  } catch (error) {
+    logger.error('Error getting initial connection string:', error);
+  }
+
   // Register tool list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return { tools };
@@ -48,6 +56,8 @@ export function setupTools(server: Server, db: DatabaseService) {
   server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
     try {
       const { name, arguments: args = {} } = request.params;
+      logger.info(`Tool called: ${name}`);
+
       const tool = tools[name as keyof typeof tools];
 
       if (!tool) {
@@ -94,6 +104,15 @@ export function setupTools(server: Server, db: DatabaseService) {
 
       // Pass database instance to database-dependent tools
       if (name === 'query_steampipe' || name === 'table_list' || name === 'table_show') {
+        logger.info(`Database tool called: ${name}`);
+        logger.info('Current db instance:', db);
+        try {
+          const isConnected = await db.testConnection();
+          logger.info(`Database connection test result: ${isConnected}`);
+        } catch (error) {
+          logger.error('Database connection test failed:', error);
+        }
+
         const dbHandler = tool.handler as DbToolHandler;
         return await dbHandler(args, db);
       }
