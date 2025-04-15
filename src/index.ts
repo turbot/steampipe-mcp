@@ -9,13 +9,17 @@ import { setupResourceHandlers, resourceCapabilities } from "./resources/index.j
 import { setupResourceTemplateHandlers, resourceTemplateCapabilities } from "./resourceTemplates/index.js";
 import { logger } from "./services/logger.js";
 
+// Import package.json
+import pkg from '../package.json' assert { type: 'json' };
+
 // Server metadata
 const SERVER_INFO = {
-  name: "steampipe",
-  version: "0.1.0",
-  description: "Use Steampipe to explore and query your cloud and security logs with SQL.",
-  license: "Apache-2.0",
-  homepage: "https://github.com/turbot/steampipe-mcp",
+  name: pkg.name.replace('@turbot/', ''),
+  version: pkg.version,
+  description: pkg.description,
+  vendor: pkg.author,
+  license: pkg.license,
+  homepage: pkg.homepage,
 } as const;
 
 let serverStartTime: Date;
