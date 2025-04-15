@@ -15,31 +15,32 @@ Perfect for:
 
 Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
 
-## Components
+## Capabilities
 
 ### Tools
 
 - **steampipe_query**
-  - Execute read-only SQL queries against the connected Steampipe database
+  - Query cloud and security logs with SQL
+  - For best performance: use CTEs instead of joins, limit columns requested
   - Input: `sql` (string): The SQL query to execute using PostgreSQL syntax
-  - All queries are executed within a READ ONLY transaction
+  - All queries are read-only and use PostgreSQL syntax
 
 - **steampipe_table_list**
-  - List all available Steampipe tables
+  - List all available Steampipe tables. Use schema and filter parameters to narrow down results
   - Optional input: `schema` (string): Filter tables by specific schema
   - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
 
 - **steampipe_table_show**
-  - Get detailed information about a specific table including its columns
+  - Get detailed information about a specific table, including column definitions, data types, and descriptions
   - Input: `name` (string): The name of the table to show details for (can be schema qualified e.g. 'aws_account' or 'aws.aws_account')
   - Optional input: `schema` (string): The schema containing the table
 
 - **steampipe_plugin_list**
-  - List all Steampipe plugins installed on the system
+  - List all Steampipe plugins installed on the system. Plugins provide access to different data sources like AWS, GCP, or Azure
   - No input parameters required
 
 - **steampipe_plugin_show**
-  - Get details for a specific Steampipe plugin installation
+  - Get details for a specific Steampipe plugin installation, including version, memory limits, and configuration
   - Input: `name` (string): Name of the plugin to show details for
 
 ### Prompts
