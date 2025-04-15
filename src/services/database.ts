@@ -223,8 +223,30 @@ export class DatabaseService {
         throw new Error('No database connection available');
       }
 
-      const result = await this.pool.query(query, params);
-      return result.rows;
+      // Get a client from the pool
+      const client = await this.pool.connect();
+      
+      try {
+        // Start a read-only transaction
+        await client.query('BEGIN TRANSACTION READ ONLY');
+        
+        // Execute the query within the transaction
+        const result = await client.query(query, params);
+        
+        // Commit the transaction
+        await client.query('COMMIT');
+        
+        return result.rows;
+      } catch (error) {
+        // Rollback on error
+        await client.query('ROLLBACK').catch(rollbackError => {
+          logger.error('Error rolling back transaction:', rollbackError);
+        });
+        throw error;
+      } finally {
+        // Always release the client back to the pool
+        client.release();
+      }
     } catch (error) {
       // Enhance query error messages
       if (error instanceof Error) {
