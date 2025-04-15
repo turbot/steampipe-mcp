@@ -15,12 +15,6 @@ Perfect for:
 
 Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
 
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) v16 or higher (includes `npx`)
-- For local use: [Steampipe](https://steampipe.io/downloads) installed and running (`steampipe service start`)
-- For Turbot Pipes: A [Turbot Pipes](https://turbot.com/pipes) workspace and connection string
-
 ## Capabilities
 
 ### Tools
@@ -74,6 +68,12 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 This resource enables AI tools to check and verify the connection status to your Steampipe instance.
 
 ## Installation
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v16 or higher (includes `npx`)
+- For local use: [Steampipe](https://steampipe.io/downloads) installed and running (`steampipe service start`)
+- For Turbot Pipes: A [Turbot Pipes](https://turbot.com/pipes) workspace and connection string
 
 ### Claude Desktop
 
@@ -157,42 +157,44 @@ Save the configuration file and restart Cursor for the changes to take effect.
 
 ## Prompting Guide
 
-### Best Practices
+First, run the `best_practices` prompt included in the MCP server to teach your LLM how best to work with Steampipe. Then, ask anything!
 
-The Steampipe MCP includes a pre-built `best_practices` prompt. Running it before running your own prompts will teach the LLM how to work most effectively with Steampipe, including:
-
-- How to explore available data schemas and tables
-- When to use specific tables for different resource types
-- How to write efficient queries that follow Steampipe conventions
-- Best practices for formatting and presenting results
-
-In Claude, you can run load this prompt through the plug icon in the prompt window.
-
-### Example Prompts
-
-Each prompt below is designed to work with Steampipe's table structure, where each resource type (buckets, instances, etc.) has its own table.
-
+Explore your cloud infrastructure:
 ```
-List 10 S3 buckets and show me their encryption settings
+What AWS accounts can you see?
 ```
 
+Simple, specific questions work well:
 ```
-Find any IAM users with access keys older than 30 days
-```
-
-```
-What are my most expensive EC2 instances?
+Show me all S3 buckets that were created in the last week
 ```
 
+Generate infrastructure reports:
 ```
-Analyze my S3 buckets for security risks including public access, logging configuration, and encryption settings
+List my EC2 instances with their attached EBS volumes
+```
+
+Dive into security analysis:
+```
+Find any IAM users with access keys that haven't been rotated in the last 90 days
+```
+
+Get compliance insights:
+```
+Show me all EC2 instances that don't comply with our tagging standards
+```
+
+Explore potential risks:
+```
+Analyze my S3 buckets for security risks including public access, logging, and encryption
 ```
 
 Remember to:
-- Ask about specific resource types (e.g., EC2 instances, S3 buckets, IAM users)
-- Be clear about which regions or time periods you're interested in
-- Start with simple questions about one resource type
-- Add more complexity or conditions after seeing the initial results
+- Be specific about which cloud resources you want to analyze (EC2, S3, IAM, etc.)
+- Mention regions or accounts if you're interested in specific ones
+- Start with simple queries before adding complex conditions
+- Use natural language - the LLM will handle the SQL translation
+- Be bold and exploratory - the LLM can help you discover insights across your entire infrastructure!
 
 ## Local Development
 
@@ -236,9 +238,7 @@ node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 
 Replace `/path/to/your/workspace` with the absolute path to your local development directory. For example, if you cloned the repository to `~/src/steampipe-mcp`, you would use `~/src/steampipe-mcp/dist/index.js`.
 
-## Testing with MCP Inspector
-
-The MCP Inspector is helpful for testing and debugging. To test your local development version:
+6. The MCP Inspector is helpful for testing and debugging. To test your local development version:
 
 ```sh
 npx @modelcontextprotocol/inspector dist/index.js
