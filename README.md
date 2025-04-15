@@ -81,29 +81,30 @@ Add the following configuration to the "mcpServers" section of your `claude_desk
     "steampipe": {
       "command": "npx",
       "args": [
-        "-y",
-        "github:turbot/steampipe-mcp",
-        "postgresql://steampipe@localhost:9193/steampipe"
+        "@turbot/steampipe-mcp"
       ]
     }
   }
 }
 ```
 
-You can configure the Steampipe database connection in two ways:
+By default, this will connect to your local Steampipe installation at `postgresql://steampipe@localhost:9193/steampipe`. Make sure to run `steampipe service start` first.
 
-1. Command line argument (takes precedence if provided):
-   ```sh
-   npx -y github:turbot/steampipe-mcp postgresql://username:password@hostname:port/database
-   ```
+To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add your connection string to the args:
 
-2. Environment variable:
-   ```sh
-   export STEAMPIPE_MCP_WORKSPACE_DATABASE=postgresql://username:password@hostname:port/database
-   npx -y github:turbot/steampipe-mcp
-   ```
-
-The default connection is `postgresql://steampipe@localhost:9193/steampipe`. To run Steampipe locally use `steampipe service start`. You can also connect directly to a [Turbot Pipes](https://turbot.com/pipes) workspace using a connection string like `postgresql://username:password@my-workspace.turbot.io:5432/steampipe`.
+```json
+{
+  "mcpServers": {
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "@turbot/steampipe-mcp",
+        "postgresql://username:password@my-workspace.turbot.io:5432/steampipe"
+      ]
+    }
+  }
+}
+```
 
 ### Cursor
 
@@ -123,26 +124,28 @@ To install the Steampipe MCP server in Cursor:
        "steampipe": {
          "name": "Steampipe",
          "description": "Query Steampipe data",
-         "server": "github:turbot/steampipe-mcp",
-         "args": ["postgresql://username:password@hostname:port/database"],  // Optional: connection string
-         "env": {
-           // Optional: only used if args doesn't include a connection string
-           "STEAMPIPE_MCP_WORKSPACE_DATABASE": "postgresql://username:password@hostname:port/database"
-         }
+         "server": "@turbot/steampipe-mcp"
        }
      }
    }
    ```
 
-   The connection string can be specified either:
-   1. As a command line argument in the `args` array (takes precedence if provided)
-   2. Through the `STEAMPIPE_MCP_WORKSPACE_DATABASE` environment variable (used as fallback)
-   
-   If neither is specified, it defaults to `postgresql://steampipe@localhost:9193/steampipe`.
+   By default, this will connect to your local Steampipe installation. To connect to a Turbot Pipes workspace instead:
+
+   ```json
+   {
+     "mcpServers": {
+       "steampipe": {
+         "name": "Steampipe",
+         "description": "Query Steampipe data",
+         "server": "@turbot/steampipe-mcp",
+         "args": ["postgresql://username:password@my-workspace.turbot.io:5432/steampipe"]
+       }
+     }
+   }
+   ```
 
 3. Save the configuration file and restart Cursor for the changes to take effect.
-
-4. The Steampipe MCP server will now be available in your Cursor environment.
 
 ## Prompting Guide
 
