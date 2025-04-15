@@ -15,14 +15,19 @@ export const resource: Resource & { handler: ResourceHandler } = {
   type: "status",
   description: "Get the current status of the Steampipe connection",
   handler: async (db: DatabaseService) => {
+    // Get the current config and connection state
+    const connectionString = db.configConnectionString;
+    const sourceType = db.configSourceType;
+    const isConnected = db.isConnected;
+
     return {
       contents: [{
         uri: "steampipe://status",
         mimeType: "application/json",
         text: JSON.stringify({
-          connection_string: db.connectionString,
-          source: "steampipe",
-          status: "connected"
+          connection_string: connectionString,
+          source: sourceType,
+          status: isConnected ? "connected" : "disconnected"
         }, null, 2)
       }]
     };

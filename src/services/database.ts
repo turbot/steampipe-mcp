@@ -82,6 +82,14 @@ export class DatabaseService {
     return this._sourceType;
   }
 
+  get configConnectionString(): string {
+    return this.config.connectionString;
+  }
+
+  get configSourceType(): DatabaseSourceType {
+    return this.config.sourceType;
+  }
+
   /**
    * Update the connection configuration
    */
