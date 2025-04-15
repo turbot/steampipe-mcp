@@ -22,55 +22,52 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 - **best_practices**
   - Best practices for working with Steampipe data
   - Provides detailed guidance on:
-    - How to explore available data
-    - When to use specific tables
-    - Query structure and optimization
-    - Response formatting
-    - Performance considerations
+    - Response style and formatting conventions
+    - Using CTEs (WITH clauses) vs joins
+    - SQL syntax and style conventions
+    - Column selection and optimization
+    - Schema exploration and understanding
+    - Query structure and organization
+    - Performance considerations and caching
+    - Error handling and troubleshooting
 
 ### Tools
 
-- **list_steampipe_tables**
-  - List all unique tables in the database, excluding public and information_schema schemas
-  - Optional input: `schema` (string): Target specific schema for table results
-  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
-
-- **inspect_steampipe_database**
-  - List all schemas in the database
-  - Optional input: `filter` (string): Filter schema names by ILIKE pattern (e.g. '%aws%')
-
-- **inspect_steampipe_schema**
-  - List all tables in a schema
-  - Input: `name` (string): The schema name to inspect
-  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%aws_iam_%')
-
-- **inspect_steampipe_table**
-  - Get detailed information about a table including its columns
-  - Input: `name` (string): The name of the table to inspect
-  - Optional input: `schema` (string): The schema containing the table
-
 - **query_steampipe**
   - Execute read-only SQL queries against the connected Steampipe database
-  - Input: `sql` (string): The SQL query to execute
+  - Input: `sql` (string): The SQL query to execute using PostgreSQL syntax
   - All queries are executed within a READ ONLY transaction
 
-- **clear_steampipe_cache**
-  - Clear any cached database information
+- **table_list**
+  - List all available Steampipe tables
+  - Optional input: `schema` (string): Filter tables by specific schema
+  - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
+
+- **table_show**
+  - Get detailed information about a specific table including its columns
+  - Input: `name` (string): The name of the table to show details for (can be schema qualified e.g. 'aws_account' or 'aws.aws_account')
+  - Optional input: `schema` (string): The schema containing the table
+
+- **plugin_list**
+  - List all Steampipe plugins installed on the system
   - No input parameters required
 
-### Resource Templates
+- **plugin_show**
+  - Get details for a specific Steampipe plugin installation
+  - Input: `name` (string): Name of the plugin to show details for
 
-The Steampipe MCP includes resource templates that define how to interact with different types of resources. Currently supported resource types:
+### Resources
 
-- **schema**
-  - Represents a Steampipe schema
-  - Properties include name, description, and tables
+The Steampipe MCP provides access to the following resources:
 
-- **table**
-  - Represents a Steampipe table
-  - Properties include name, description, columns, and relationships
+- **status**
+  - Represents the current state of the Steampipe connection
+  - Properties include:
+    - connection_string: The current database connection string
+    - source: The type of connection (steampipe, connection_string, etc.)
+    - status: The connection state (connected/disconnected)
 
-Resource templates enable structured access to Steampipe metadata, making it easier for AI tools to understand and navigate your data.
+This resource enables AI tools to check and verify the connection status to your Steampipe instance.
 
 ## Installation
 
