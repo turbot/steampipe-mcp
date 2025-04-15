@@ -128,7 +128,9 @@ Open your Cursor MCP configuration file at `~/.cursor/mcp.json` and add the foll
 }
 ```
 
-By default, this will connect to your local Steampipe installation. To connect to a Turbot Pipes workspace instead:
+By default, this will connect to your local Steampipe installation at `postgresql://steampipe@localhost:9193/steampipe`. Make sure to run `steampipe service start` first.
+
+To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add your connection string to the args:
 
 ```json
 {
@@ -158,7 +160,7 @@ The Steampipe MCP includes a pre-built `best_practices` prompt. Running it befor
 - How to write efficient queries that follow Steampipe conventions
 - Best practices for formatting and presenting results
 
-In Cursor, you can run load this prompt through the plug icon in the prompt window.
+In Claude, you can run load this prompt through the plug icon in the prompt window.
 
 ### Example Prompts
 
@@ -186,12 +188,6 @@ Remember to:
 - Start with simple questions about one resource type
 - Add more complexity or conditions after seeing the initial results
 
-Claude will:
-- Choose the appropriate Steampipe tables for your request
-- Write efficient SQL queries behind the scenes
-- Format the results in a clear, readable way
-- Provide insights and recommendations based on best practices
-
 ## Local Development
 
 To set up the project for local development:
@@ -217,7 +213,7 @@ npm run build
 node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 ```
 
-5. To use your local development version with Cursor, update your `mcp.json`:
+5. To use your local development version with Cursor, update your `~/.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
