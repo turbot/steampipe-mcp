@@ -3,15 +3,16 @@ import { DatabaseService } from "../services/database.js";
 import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
-  name: "query_steampipe",
-  description: `Query cloud and security logs with SQL.
+  name: "steampipe_query",
+  description: `Query cloud infrastructure, SaaS, APIs, code and more with SQL.
   
   Queries are read-only and must use PostgreSQL syntax. 
 
-  Use table_list and table_show to discover available tables and columns.
+  For best performance limit the columns requested and use CTEs instead of
+  joins. Trust the search path unless sure you need to specify a schema.
 
-  For best performance: use CTEs instead of joins, limit columns requested.
-  `,
+  Check available tables and columns before querying using steampipe_table_list
+  and steampipe_table_show.`,
   inputSchema: {
     type: "object",
     properties: {

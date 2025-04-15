@@ -3,7 +3,7 @@ import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { logger } from "../services/logger.js";
 
 export const tool: Tool = {
-  name: "table_list",
+  name: "steampipe_table_list",
   description: "List all available Steampipe tables.",
   inputSchema: {
     type: "object",

@@ -76,8 +76,8 @@ export const prompt: Prompt & { handler: PromptHandler } = {
 
 5. Understanding the schema
    - Never guess table or column names - always query the information schema
-   - Use table_list to discover and filter tables. This is the most efficient way to discover tables.
-   - Use table_show to get details about a specific table and its columns
+   - Use steampipe_table_list to discover and filter tables. This is the most efficient way to discover tables.
+   - Use steampipe_table_show to get details about a specific table and its columns
    - If those are insufficient, query the information_schema directly
    - Never limit results when querying information_schema
    

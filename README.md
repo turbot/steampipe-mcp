@@ -19,26 +19,26 @@ Connects directly to your local Steampipe installation or your Turbot Pipes work
 
 ### Tools
 
-- **query_steampipe**
+- **steampipe_query**
   - Execute read-only SQL queries against the connected Steampipe database
   - Input: `sql` (string): The SQL query to execute using PostgreSQL syntax
   - All queries are executed within a READ ONLY transaction
 
-- **table_list**
+- **steampipe_table_list**
   - List all available Steampipe tables
   - Optional input: `schema` (string): Filter tables by specific schema
   - Optional input: `filter` (string): Filter tables by ILIKE pattern (e.g. '%ec2%')
 
-- **table_show**
+- **steampipe_table_show**
   - Get detailed information about a specific table including its columns
   - Input: `name` (string): The name of the table to show details for (can be schema qualified e.g. 'aws_account' or 'aws.aws_account')
   - Optional input: `schema` (string): The schema containing the table
 
-- **plugin_list**
+- **steampipe_plugin_list**
   - List all Steampipe plugins installed on the system
   - No input parameters required
 
-- **plugin_show**
+- **steampipe_plugin_show**
   - Get details for a specific Steampipe plugin installation
   - Input: `name` (string): Name of the plugin to show details for
 

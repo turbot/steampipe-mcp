@@ -5,11 +5,11 @@ import AjvModule from "ajv";
 import { logger } from "../services/logger.js";
 
 // Import tools
-import { tool as queryTool } from './query_steampipe.js';
-import { tool as tableListTool } from './table_list.js';
-import { tool as tableShowTool } from './table_show.js';
-import { tool as pluginListTool } from './plugin_list.js';
-import { tool as pluginShowTool } from './plugin_show.js';
+import { tool as queryTool } from './steampipe_query.js';
+import { tool as tableListTool } from './steampipe_table_list.js';
+import { tool as tableShowTool } from './steampipe_table_show.js';
+import { tool as pluginListTool } from './steampipe_plugin_list.js';
+import { tool as pluginShowTool } from './steampipe_plugin_show.js';
 
 // Initialize JSON Schema validator
 const Ajv = AjvModule.default || AjvModule;
@@ -22,11 +22,11 @@ type DbTool = Tool & {
 
 // Export all tools for server capabilities
 export const tools = {
-  query_steampipe: queryTool as DbTool,
-  table_list: tableListTool as DbTool,
-  table_show: tableShowTool as DbTool,
-  plugin_list: pluginListTool as DbTool,
-  plugin_show: pluginShowTool as DbTool,
+  steampipe_query: queryTool as DbTool,
+  steampipe_table_list: tableListTool as DbTool,
+  steampipe_table_show: tableShowTool as DbTool,
+  steampipe_plugin_list: pluginListTool as DbTool,
+  steampipe_plugin_show: pluginShowTool as DbTool,
 } as const;
 
 // Initialize tool handlers

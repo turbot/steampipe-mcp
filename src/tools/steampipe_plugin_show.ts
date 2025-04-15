@@ -3,7 +3,7 @@ import { logger } from "../services/logger.js";
 import { DatabaseService } from "../services/database.js";
 
 export const tool: Tool = {
-  name: "plugin_show",
+  name: "steampipe_plugin_show",
   description: "Get details for a specific Steampipe plugin installation.",
   inputSchema: {
     type: "object",
