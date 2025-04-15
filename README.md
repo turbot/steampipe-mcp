@@ -15,6 +15,12 @@ Perfect for:
 
 Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) v16 or higher (includes `npx`)
+- For local use: [Steampipe](https://steampipe.io/downloads) installed and running (`steampipe service start`)
+- For Turbot Pipes: A [Turbot Pipes](https://turbot.com/pipes) workspace and connection string
+
 ## Capabilities
 
 ### Tools
