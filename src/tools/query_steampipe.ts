@@ -24,7 +24,7 @@ export const tool: Tool = {
   handler: async (db: DatabaseService | undefined, args: { sql: string }) => {
     if (!db) {
       return {
-        content: [{ type: "text", text: JSON.stringify({ error: "Database not available" }, null, 2) }],
+        content: [{ type: "text", text: "Database not available" }],
         isError: true,
       };
     }
@@ -56,9 +56,9 @@ export const tool: Tool = {
         isError: false
       };
     } catch (error) {
-      logger.error('Failed to execute query:', error instanceof Error ? error.message : String(error));
+      logger.error('Error executing query:', error);
       return {
-        content: [{ type: "text", text: JSON.stringify({ error: error instanceof Error ? error.message : String(error) }, null, 2) }],
+        content: [{ type: "text", text: error instanceof Error ? error.message : String(error) }],
         isError: true
       };
     }

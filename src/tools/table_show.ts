@@ -125,7 +125,7 @@ export const tool: Tool = {
       return {
         content: [{
           type: "text",
-          text: "Failed to get table details. Please check the logs for more details."
+          text: `Failed to get table details: ${err instanceof Error ? err.message : String(err)}`
         }],
         isError: true
       };

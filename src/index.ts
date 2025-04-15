@@ -28,30 +28,48 @@ export async function startServer(port: number = 27123) {
   serverStartTime = new Date();
   logger.info(`Starting server on port ${port}`);
 
-  // Initialize database service
-  const db = await DatabaseService.create();
+  try {
+    // Get database service instance (but don't connect yet)
+    const db = DatabaseService.getInstance();
 
-  // Initialize server
-  const server = new Server(SERVER_INFO, {
-    capabilities: {
-      tools,
-      prompts: promptCapabilities.prompts,
-      resources: resourceCapabilities.resources,
-      resourceTemplates: resourceTemplateCapabilities.resourceTemplates
-    },
-  });
+    // Initialize server
+    logger.info('Creating MCP server instance...');
+    const serverStartTime = Date.now();
+    const server = new Server(SERVER_INFO, {
+      capabilities: {
+        tools,
+        prompts: promptCapabilities.prompts,
+        resources: resourceCapabilities.resources,
+        resourceTemplates: resourceTemplateCapabilities.resourceTemplates
+      },
+    });
+    logger.info(`MCP server instance created (took ${Date.now() - serverStartTime}ms)`);
 
-  // Initialize handlers
-  setupTools(server, db);
-  setupPromptHandlers(server);
-  setupResourceHandlers(server, db);
-  setupResourceTemplateHandlers(server);
+    // Initialize handlers
+    logger.info('Setting up handlers...');
+    const handlersStartTime = Date.now();
+    setupTools(server, db);
+    logger.info('Tools handlers initialized');
+    setupPromptHandlers(server);
+    logger.info('Prompt handlers initialized');
+    setupResourceHandlers(server, db);
+    logger.info('Resource handlers initialized');
+    setupResourceTemplateHandlers(server);
+    logger.info(`All handlers initialized successfully (took ${Date.now() - handlersStartTime}ms)`);
 
-  // Connect transport
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+    // Connect transport
+    logger.info('Connecting transport...');
+    const transportStartTime = Date.now();
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    logger.info(`Transport connected successfully (took ${Date.now() - transportStartTime}ms)`);
 
-  logger.info(`Server started on port ${port}`);
+    const totalTime = Date.now() - serverStartTime;
+    logger.info(`Server started successfully on port ${port} (total initialization time: ${totalTime}ms)`);
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    throw error;
+  }
 }
 
 // Start the server

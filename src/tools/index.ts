@@ -4,18 +4,10 @@ import { DatabaseService } from "../services/database.js";
 import AjvModule from "ajv";
 import { logger } from "../services/logger.js";
 
-// Define tool handler types
-type DbToolHandler = (args: any, db: DatabaseService) => Promise<ServerResult>;
-type StandardToolHandler = (args: any) => Promise<ServerResult>;
-
-// Database Operations
+// Import tools
 import { tool as queryTool } from './query_steampipe.js';
-
-// Data Structure Operations
 import { tool as tableListTool } from './table_list.js';
 import { tool as tableShowTool } from './table_show.js';
-
-// Plugin Operations
 import { tool as pluginListTool } from './plugin_list.js';
 import { tool as pluginShowTool } from './plugin_show.js';
 
@@ -23,49 +15,45 @@ import { tool as pluginShowTool } from './plugin_show.js';
 const Ajv = AjvModule.default || AjvModule;
 const ajv = new Ajv();
 
+// Define tool types
+type DbTool = Tool & {
+  handler: (db: DatabaseService, args: any) => Promise<ServerResult>;
+};
+
+type StandardTool = Tool & {
+  handler: (args: any) => Promise<ServerResult>;
+};
+
 // Export all tools for server capabilities
 export const tools = {
-  // Database Operations
-  query_steampipe: queryTool,          // Core database query functionality
-
-  // Data Structure Operations
-  table_list: tableListTool,         // List available tables
-  table_show: tableShowTool,         // Show table details
-
-  // Plugin Operations
-  plugin_list: pluginListTool,       // List available plugins
-  plugin_show: pluginShowTool,       // Show plugin details
+  query_steampipe: queryTool as DbTool,
+  table_list: tableListTool as DbTool,
+  table_show: tableShowTool as DbTool,
+  plugin_list: pluginListTool as StandardTool,
+  plugin_show: pluginShowTool as StandardTool,
 } as const;
 
 // Initialize tool handlers
 export function setupTools(server: Server, db: DatabaseService) {
-  logger.info('Setting up tools with database service:', db);
-  try {
-    const connectionString = db.connectionString;
-    logger.info('Initial database connection string:', connectionString);
-  } catch (error) {
-    logger.error('Error getting initial connection string:', error);
-  }
-
   // Register tool list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return { tools };
+    return { 
+      tools: Object.entries(tools).map(([name, tool]) => ({
+        name,
+        description: tool.description,
+        inputSchema: tool.inputSchema
+      }))
+    };
   });
 
   // Register tool handlers
   server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
     try {
       const { name, arguments: args = {} } = request.params;
-      logger.info(`Tool called: ${name}`);
-
       const tool = tools[name as keyof typeof tools];
 
       if (!tool) {
         throw new Error(`Unknown tool: ${name}`);
-      }
-
-      if (!tool.handler) {
-        throw new Error(`Tool ${name} has no handler defined`);
       }
 
       // Validate arguments against the tool's schema
@@ -102,24 +90,12 @@ export function setupTools(server: Server, db: DatabaseService) {
         }
       }
 
-      // Pass database instance to database-dependent tools
+      // Call the tool handler with database for db tools
       if (name === 'query_steampipe' || name === 'table_list' || name === 'table_show') {
-        logger.info(`Database tool called: ${name}`);
-        logger.info('Current db instance:', db);
-        try {
-          const isConnected = await db.testConnection();
-          logger.info(`Database connection test result: ${isConnected}`);
-        } catch (error) {
-          logger.error('Database connection test failed:', error);
-        }
-
-        const dbHandler = tool.handler as DbToolHandler;
-        return await dbHandler(args, db);
+        return await (tool as DbTool).handler(db, args);
       }
 
-      // Standard tool handling
-      const standardHandler = tool.handler as StandardToolHandler;
-      return await standardHandler(args);
+      return await (tool as StandardTool).handler(args);
     } catch (error) {
       logger.error('Error executing tool:', error);
       return {

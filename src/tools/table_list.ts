@@ -88,7 +88,7 @@ export const tool: Tool = {
       return {
         content: [{
           type: "text",
-          text: "Failed to list tables. Please check the logs for more details."
+          text: `Failed to list tables: ${err instanceof Error ? err.message : String(err)}`
         }],
         isError: true
       };
