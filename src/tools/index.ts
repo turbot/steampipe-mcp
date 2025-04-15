@@ -41,13 +41,7 @@ export const tools = {
 export function setupTools(server: Server, db: DatabaseService) {
   // Register tool list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return {
-      tools: Object.entries(tools).map(([name, tool]) => ({
-        name,
-        description: tool.description,
-        inputSchema: tool.inputSchema
-      }))
-    };
+    return { tools };
   });
 
   // Register tool handlers
