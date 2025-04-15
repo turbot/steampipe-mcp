@@ -9,6 +9,8 @@ export const tool: Tool = {
   Queries are read-only and must use PostgreSQL syntax. 
 
   Use table_list and table_show to discover available tables and columns.
+
+  For best performance: use CTEs instead of joins, limit columns requested.
   `,
   inputSchema: {
     type: "object",
@@ -52,7 +54,7 @@ export const tool: Tool = {
       });
 
       return {
-        content: [{ type: "text", text: JSON.stringify(processedRows, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify(processedRows) }],
         isError: false
       };
     } catch (error) {
