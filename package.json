@@ -14,9 +14,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && chmod +x dist/index.js",
+    "build": "tsc && shx chmod +x dist/index.js",
     "watch": "tsc --watch",
-    "clean": "rm -rf dist",
+    "clean": "shx rm -rf dist",
     "start": "node dist/index.js",
     "prepublishOnly": "npm run build"
   },
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@types/pg": "^8.11.2",
+    "shx": "^0.3.4",
     "typescript": "^5.6.2"
   }
 }
