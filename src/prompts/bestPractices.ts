@@ -1,15 +1,17 @@
 import type { Prompt } from "@modelcontextprotocol/sdk/types.js";
 
-type PromptHandler = () => Promise<{ content: Array<{ type: string; text: string }> }>;
+type PromptHandler = () => Promise<{ messages: Array<{ role: string; content: { type: string; text: string } }> }>;
 
 export const prompt: Prompt & { handler: PromptHandler } = {
   name: "best_practices",
   description: "Best practices for writing Steampipe SQL queries",
   handler: async () => {
     return {
-      content: [{
-        type: "text",
-        text: `When writing SQL queries for Steampipe, follow these essential best practices:
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: `When writing SQL queries for Steampipe, follow these essential best practices:
 
 1. Response Style
    - Always return a markdown table with the results of the query
@@ -119,6 +121,7 @@ export const prompt: Prompt & { handler: PromptHandler } = {
    - Each column access may trigger an API call
    - Filtering early reduces data transfer
    - Materialized CTEs cache results for reuse`
+        }
       }]
     };
   }

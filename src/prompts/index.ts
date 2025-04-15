@@ -3,14 +3,8 @@ import { GetPromptRequestSchema, ListPromptsRequestSchema, type Prompt } from "@
 import { prompt as bestPracticesPrompt } from "./bestPractices.js";
 import { logger } from "../services/logger.js";
 
-type PromptWithHandler = Prompt & {
-  handler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
-};
-
 // Register all available prompts
-const prompts: PromptWithHandler[] = [
-  bestPracticesPrompt
-];
+const prompts = [bestPracticesPrompt];
 
 // Export prompts for server capabilities
 export const promptCapabilities = {
