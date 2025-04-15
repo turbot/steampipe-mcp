@@ -4,6 +4,10 @@ import { DatabaseService } from "../services/database.js";
 import AjvModule from "ajv";
 import { logger } from "../services/logger.js";
 
+// Define tool handler types
+type DbToolHandler = (args: any, db: DatabaseService) => Promise<ServerResult>;
+type StandardToolHandler = (args: any) => Promise<ServerResult>;
+
 // Database Operations
 import { tool as queryTool } from './query_steampipe.js';
 import { description as reconnectDescription, inputSchema as reconnectInputSchema, handler as reconnectHandler } from './reconnect_steampipe.js';
@@ -27,7 +31,7 @@ export const tools = {
   reconnect_steampipe: {
     description: reconnectDescription,
     inputSchema: reconnectInputSchema,
-    handler: reconnectHandler,
+    handler: reconnectHandler as DbToolHandler,
   } as const,
 
   // Data Structure Operations
@@ -37,71 +41,88 @@ export const tools = {
   // Plugin Operations
   plugin_list: pluginListTool,       // List available plugins
   plugin_show: pluginShowTool,       // Show plugin details
-};
+} as const;
 
 // Initialize tool handlers
 export function setupTools(server: Server, db: DatabaseService) {
   // Register tool list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: Object.values(tools),
+      tools: Object.entries(tools).map(([name, tool]) => ({
+        name,
+        description: tool.description,
+        inputSchema: tool.inputSchema
+      }))
     };
   });
 
   // Register tool handlers
   server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
-    const { name, arguments: args = {} } = request.params;
-    const tool = tools[name as keyof typeof tools];
+    try {
+      const { name, arguments: args = {} } = request.params;
+      const tool = tools[name as keyof typeof tools];
 
-    if (!tool) {
-      throw new Error(`Unknown tool: ${name}`);
-    }
-
-    if (!tool.handler) {
-      throw new Error(`Tool ${name} has no handler defined`);
-    }
-
-    // Validate arguments against the tool's schema
-    if (tool.inputSchema) {
-      const validate = ajv.compile(tool.inputSchema);
-      if (!validate(args)) {
-        logger.error(`Invalid arguments for tool ${name}:`, validate.errors);
-        
-        // Format validation errors in a user-friendly way
-        const errors = validate.errors || [];
-        const errorMessages = errors.map(err => {
-          const path = err.instancePath.replace(/^\//, '') || 'input';
-          switch (err.keyword) {
-            case 'required':
-              return `Missing required field: ${err.params.missingProperty}`;
-            case 'type':
-              return `${path} must be a ${err.params.type}`;
-            case 'enum':
-              return `${path} must be one of: ${err.params.allowedValues?.join(', ')}`;
-            case 'additionalProperties':
-              return `Unexpected field: ${err.params.additionalProperty}`;
-            default:
-              return `${path}: ${err.message}`;
-          }
-        });
-
-        return {
-          content: [{
-            type: "text",
-            text: errorMessages.join('\n')
-          }],
-          isError: true
-        };
+      if (!tool) {
+        throw new Error(`Unknown tool: ${name}`);
       }
-    }
 
-    // Pass database instance to database-dependent tools
-    if (name === 'query_steampipe' || name === 'reconnect_steampipe' || 
-        name === 'table_list' || name === 'table_show') {
-      return await (tool.handler as (db: DatabaseService, args: unknown) => Promise<ServerResult>)(db, args);
-    }
+      if (!tool.handler) {
+        throw new Error(`Tool ${name} has no handler defined`);
+      }
 
-    // Standard tool handling
-    return await (tool.handler as (args: unknown) => Promise<ServerResult>)(args);
+      // Validate arguments against the tool's schema
+      if (tool.inputSchema) {
+        const validate = ajv.compile(tool.inputSchema);
+        if (!validate(args)) {
+          logger.error(`Invalid arguments for tool ${name}:`, validate.errors);
+          
+          // Format validation errors in a user-friendly way
+          const errors = validate.errors || [];
+          const errorMessages = errors.map(err => {
+            const path = err.instancePath.replace(/^\//, '') || 'input';
+            switch (err.keyword) {
+              case 'required':
+                return `Missing required field: ${err.params.missingProperty}`;
+              case 'type':
+                return `${path} must be a ${err.params.type}`;
+              case 'enum':
+                return `${path} must be one of: ${err.params.allowedValues?.join(', ')}`;
+              case 'additionalProperties':
+                return `Unexpected field: ${err.params.additionalProperty}`;
+              default:
+                return `${path}: ${err.message}`;
+            }
+          });
+
+          return {
+            content: [{
+              type: "text",
+              text: errorMessages.join('\n')
+            }],
+            isError: true
+          };
+        }
+      }
+
+      // Pass database instance to database-dependent tools
+      if (name === 'query_steampipe' || name === 'reconnect_steampipe' || 
+          name === 'table_list' || name === 'table_show') {
+        const dbHandler = tool.handler as DbToolHandler;
+        return await dbHandler(args, db);
+      }
+
+      // Standard tool handling
+      const standardHandler = tool.handler as StandardToolHandler;
+      return await standardHandler(args);
+    } catch (error) {
+      logger.error('Error executing tool:', error);
+      return {
+        content: [{
+          type: "text",
+          text: error instanceof Error ? error.message : 'An unknown error occurred'
+        }],
+        isError: true
+      };
+    }
   });
 } 
