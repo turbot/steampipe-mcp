@@ -6,7 +6,7 @@ import { logger } from "../services/logger.js";
 
 // Database Operations
 import { tool as queryTool } from './query_steampipe.js';
-import { tool as reconnectTool } from './reconnect_steampipe.js';
+import { description as reconnectDescription, inputSchema as reconnectInputSchema, handler as reconnectHandler } from './reconnect_steampipe.js';
 
 // Data Structure Operations
 import { tool as tableListTool } from './table_list.js';
@@ -24,7 +24,11 @@ const ajv = new Ajv();
 export const tools = {
   // Database Operations
   query_steampipe: queryTool,          // Core database query functionality
-  reconnect_steampipe: reconnectTool,  // Database connection management
+  reconnect_steampipe: {
+    description: reconnectDescription,
+    inputSchema: reconnectInputSchema,
+    handler: reconnectHandler,
+  } as const,
 
   // Data Structure Operations
   table_list: tableListTool,         // List available tables
