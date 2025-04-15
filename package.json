@@ -1,9 +1,9 @@
 {
   "name": "@turbot/steampipe-mcp",
   "version": "0.1.0",
-  "description": "MCP server for interacting with Steampipe.",
+  "description": "Steampipe MCP server to query cloud infrastructure, SaaS, code and more with SQL using AI.",
   "license": "Apache-2.0",
-  "author": "Turbot HQ, Inc.",
+  "author": "Turbot HQ, Inc",
   "homepage": "https://github.com/turbot/steampipe-mcp",
   "bugs": "https://github.com/turbot/steampipe-mcp/issues",
   "type": "module",
