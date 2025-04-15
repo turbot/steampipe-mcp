@@ -10,7 +10,6 @@ type StandardToolHandler = (args: any) => Promise<ServerResult>;
 
 // Database Operations
 import { tool as queryTool } from './query_steampipe.js';
-import { description as reconnectDescription, inputSchema as reconnectInputSchema, handler as reconnectHandler } from './reconnect_steampipe.js';
 
 // Data Structure Operations
 import { tool as tableListTool } from './table_list.js';
@@ -28,11 +27,6 @@ const ajv = new Ajv();
 export const tools = {
   // Database Operations
   query_steampipe: queryTool,          // Core database query functionality
-  reconnect_steampipe: {
-    description: reconnectDescription,
-    inputSchema: reconnectInputSchema,
-    handler: reconnectHandler as DbToolHandler,
-  } as const,
 
   // Data Structure Operations
   table_list: tableListTool,         // List available tables
@@ -105,8 +99,7 @@ export function setupTools(server: Server, db: DatabaseService) {
       }
 
       // Pass database instance to database-dependent tools
-      if (name === 'query_steampipe' || name === 'reconnect_steampipe' || 
-          name === 'table_list' || name === 'table_show') {
+      if (name === 'query_steampipe' || name === 'table_list' || name === 'table_show') {
         const dbHandler = tool.handler as DbToolHandler;
         return await dbHandler(args, db);
       }
