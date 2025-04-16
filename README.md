@@ -60,7 +60,7 @@ To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add 
 | Assistant | Config File Location | Setup Guide |
 |-----------|---------------------|-------------|
 | Claude Desktop | `claude_desktop_config.json` | [Claude Desktop MCP Guide →](https://modelcontextprotocol.io/quickstart/user) |
-| Cursor | `~/.cursor/mcp.json` | [Cursor MCP Guide →](https://cursor.sh/docs/mcp) |
+| Cursor | `~/.cursor/mcp.json` | [Cursor MCP Guide →](https://docs.cursor.com/context/model-context-protocol) |
 
 Save the configuration file and restart your AI assistant for the changes to take effect.
 
