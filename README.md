@@ -204,8 +204,8 @@ npx @modelcontextprotocol/inspector dist/index.js
 
 The following environment variables can be used to configure the MCP server:
 
-- `STEAMPIPE_MCP_LOG_LEVEL`: Control server logging verbosity (default: 'info')
-- `STEAMPIPE_MCP_WORKSPACE_DATABASE`: Override the default Steampipe connection string (default: 'postgresql://steampipe@localhost:9193/steampipe')
+- `STEAMPIPE_MCP_LOG_LEVEL`: Control server logging verbosity (default: `info`)
+- `STEAMPIPE_MCP_WORKSPACE_DATABASE`: Override the default Steampipe connection string (default: `postgresql://steampipe@localhost:9193/steampipe`)
 
 ## Open Source & Contributing
 
