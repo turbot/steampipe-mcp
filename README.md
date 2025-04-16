@@ -1,19 +1,14 @@
 # Steampipe Model Context Protocol (MCP) Server
 
-Enable AI assistants like Claude to explore and query your Steampipe data! This Model Context Protocol (MCP) server lets AI tools:
+Unlock the power of AI-driven infrastructure analysis with [Steampipe](https://steampipe.io)! This Model Context Protocol server seamlessly connects AI assistants like Claude to your cloud infrastructure data, enabling natural language exploration and analysis of your entire cloud estate.
 
-- Browse your Steampipe schemas and tables
-- Understand your data structure and relationships
-- Run read-only SQL queries against your data
-- Provide insights and analysis based on your infrastructure data
+Steampipe MCP bridges AI assistants and your infrastructure data, allowing natural language:
+- Queries across AWS, Azure, GCP and 100+ cloud services
+- Security and compliance analysis
+- Cost and resource optimization
+- Query development assistance
 
-Perfect for:
-- Getting AI help analyzing your cloud infrastructure
-- Letting AI explore your compliance and security data
-- Having AI assist with Steampipe query development
-- Enabling natural language interactions with your Steampipe data
-
-Connects directly to your local Steampipe installation or your Turbot Pipes workspace, giving you AI access to all your cloud and SaaS data.
+Works with both local [Steampipe](https://steampipe.io/downloads) installations and [Turbot Pipes](https://turbot.com/pipes) workspaces, providing safe, read-only access to all your cloud and SaaS data.
 
 ## Capabilities
 
