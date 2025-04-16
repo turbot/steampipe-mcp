@@ -10,6 +10,101 @@ Steampipe MCP bridges AI assistants and your infrastructure data, allowing natur
 
 Works with both local [Steampipe](https://steampipe.io/downloads) installations and [Turbot Pipes](https://turbot.com/pipes) workspaces, providing safe, read-only access to all your cloud and SaaS data.
 
+## Installation
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v16 or higher (includes `npx`)
+- For local use: [Steampipe](https://steampipe.io/downloads) installed and running (`steampipe service start`)
+- For Turbot Pipes: A [Turbot Pipes](https://turbot.com/pipes) workspace and connection string
+
+### Configuration
+
+Add Steampipe MCP to your AI assistant's configuration file:
+
+```json
+{
+  "mcpServers": {
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp"
+      ]
+    }
+  }
+}
+```
+
+By default, this connects to your local Steampipe installation at `postgresql://steampipe@localhost:9193/steampipe`. Make sure to run `steampipe service start` first.
+
+To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add your connection string to the args:
+
+```json
+{
+  "mcpServers": {
+    "steampipe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@turbot/steampipe-mcp",
+        "postgresql://my_name:my_pw@workspace-name.usea1.db.pipes.turbot.com:9193/abc123"
+      ]
+    }
+  }
+}
+```
+
+### AI Assistant Setup
+
+| Assistant | Config File Location | Setup Guide |
+|-----------|---------------------|-------------|
+| Claude Desktop | `claude_desktop_config.json` | [Claude Desktop MCP Guide →](https://modelcontextprotocol.io/quickstart/user) |
+| Cursor | `~/.cursor/mcp.json` | [Cursor MCP Guide →](https://cursor.sh/docs/mcp) |
+
+Save the configuration file and restart your AI assistant for the changes to take effect.
+
+## Prompting Guide
+
+First, run the `best_practices` prompt included in the MCP server to teach your LLM how best to work with Steampipe. Then, ask anything!
+
+Explore your cloud infrastructure:
+```
+What AWS accounts can you see?
+```
+
+Simple, specific questions work well:
+```
+Show me all S3 buckets that were created in the last week
+```
+
+Generate infrastructure reports:
+```
+List my EC2 instances with their attached EBS volumes
+```
+
+Dive into security analysis:
+```
+Find any IAM users with access keys that haven't been rotated in the last 90 days
+```
+
+Get compliance insights:
+```
+Show me all EC2 instances that don't comply with our tagging standards
+```
+
+Explore potential risks:
+```
+Analyze my S3 buckets for security risks including public access, logging, and encryption
+```
+
+Remember to:
+- Be specific about which cloud resources you want to analyze (EC2, S3, IAM, etc.)
+- Mention regions or accounts if you're interested in specific ones
+- Start with simple queries before adding complex conditions
+- Use natural language - the LLM will handle the SQL translation
+- Be bold and exploratory - the LLM can help you discover insights across your entire infrastructure!
+
 ## Capabilities
 
 ### Tools
@@ -62,138 +157,9 @@ Works with both local [Steampipe](https://steampipe.io/downloads) installations 
 
 This resource enables AI tools to check and verify the connection status to your Steampipe instance.
 
-## Installation
+## Development
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) v16 or higher (includes `npx`)
-- For local use: [Steampipe](https://steampipe.io/downloads) installed and running (`steampipe service start`)
-- For Turbot Pipes: A [Turbot Pipes](https://turbot.com/pipes) workspace and connection string
-
-### Claude Desktop
-
-[How to use MCP servers with Claude Desktop →](https://modelcontextprotocol.io/quickstart/user)
-
-Add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "steampipe": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@turbot/steampipe-mcp"
-      ]
-    }
-  }
-}
-```
-
-By default, this will connect to your local Steampipe installation at `postgresql://steampipe@localhost:9193/steampipe`. Make sure to run `steampipe service start` first.
-
-To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add your connection string to the args:
-
-```json
-{
-  "mcpServers": {
-    "steampipe": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@turbot/steampipe-mcp",
-        "postgresql://my_name:my_pw@workspace-name.usea1.db.pipes.turbot.com:9193/abc123"
-      ]
-    }
-  }
-}
-```
-
-Save the configuration file and restart Claude Desktop for the changes to take effect.
-
-### Cursor
-
-Open your Cursor MCP configuration file at `~/.cursor/mcp.json` and add the following configuration to the "mcpServers" section:
-
-```json
-{
-  "mcpServers": {
-    "steampipe": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@turbot/steampipe-mcp"
-      ]
-    }
-  }
-}
-```
-
-By default, this will connect to your local Steampipe installation at `postgresql://steampipe@localhost:9193/steampipe`. Make sure to run `steampipe service start` first.
-
-To connect to a [Turbot Pipes](https://turbot.com/pipes) workspace instead, add your connection string to the args:
-
-```json
-{
-  "mcpServers": {
-    "steampipe": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@turbot/steampipe-mcp",
-        "postgresql://my_name:my_pw@workspace-name.usea1.db.pipes.turbot.com:9193/abc123"
-      ]
-    }
-  }
-}
-```
-
-Save the configuration file and restart Cursor for the changes to take effect.
-
-## Prompting Guide
-
-First, run the `best_practices` prompt included in the MCP server to teach your LLM how best to work with Steampipe. Then, ask anything!
-
-Explore your cloud infrastructure:
-```
-What AWS accounts can you see?
-```
-
-Simple, specific questions work well:
-```
-Show me all S3 buckets that were created in the last week
-```
-
-Generate infrastructure reports:
-```
-List my EC2 instances with their attached EBS volumes
-```
-
-Dive into security analysis:
-```
-Find any IAM users with access keys that haven't been rotated in the last 90 days
-```
-
-Get compliance insights:
-```
-Show me all EC2 instances that don't comply with our tagging standards
-```
-
-Explore potential risks:
-```
-Analyze my S3 buckets for security risks including public access, logging, and encryption
-```
-
-Remember to:
-- Be specific about which cloud resources you want to analyze (EC2, S3, IAM, etc.)
-- Mention regions or accounts if you're interested in specific ones
-- Start with simple queries before adding complex conditions
-- Use natural language - the LLM will handle the SQL translation
-- Be bold and exploratory - the LLM can help you discover insights across your entire infrastructure!
-
-## Local Development
-
-To set up the project for local development:
+### Clone and Setup
 
 1. Clone the repository and navigate to the directory:
 ```sh
@@ -211,19 +177,17 @@ npm install
 npm run build
 ```
 
-4. To test locally, ensure Steampipe is running and then:
-```sh
-node dist/index.js postgresql://steampipe@localhost:9193/steampipe
-```
+### Testing
 
-5. To use your local development version with Cursor, update your `~/.cursor/mcp.json`:
+To test your local development build with AI tools that support MCP, update your MCP configuration to use the local `dist/index.js` instead of the npm package. For example:
+
 ```json
 {
   "mcpServers": {
     "steampipe": {
       "command": "node",
       "args": [
-        "/path/to/your/workspace/dist/index.js",
+        "/absolute/path/to/steampipe-mcp/dist/index.js",
         "postgresql://steampipe@localhost:9193/steampipe"
       ]
     }
@@ -231,13 +195,17 @@ node dist/index.js postgresql://steampipe@localhost:9193/steampipe
 }
 ```
 
-Replace `/path/to/your/workspace` with the absolute path to your local development directory. For example, if you cloned the repository to `~/src/steampipe-mcp`, you would use `~/src/steampipe-mcp/dist/index.js`.
-
-6. The MCP Inspector is helpful for testing and debugging. To test your local development version:
-
+Or, use the MCP Inspector to validate the server implementation:
 ```sh
 npx @modelcontextprotocol/inspector dist/index.js
 ```
+
+### Environment Variables
+
+The following environment variables can be used to configure the MCP server:
+
+- `STEAMPIPE_MCP_LOG_LEVEL`: Control server logging verbosity (default: 'info')
+- `STEAMPIPE_MCP_WORKSPACE_DATABASE`: Override the default Steampipe connection string (default: 'postgresql://steampipe@localhost:9193/steampipe')
 
 ## Open Source & Contributing
 
