@@ -15,11 +15,28 @@
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/index.js",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc --watch",
-    "clean": "shx rm -rf dist",
-    "start": "node dist/index.js",
-    "prepublishOnly": "npm run build"
+    "start": "node dist/index.js"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "ai",
+    "cnapp",
+    "cspm",
+    "mcp",
+    "mcp-server",
+    "security",
+    "steampipe",
+    "turbot-pipes"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
     "ajv": "^8.17.1",
