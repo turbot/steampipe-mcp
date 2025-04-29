@@ -1,5 +1,9 @@
 import { DatabaseService } from "../services/database.js";
 import type { Resource } from "@modelcontextprotocol/sdk/types.js";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { version } = require('../../package.json');
 
 type ResourceHandler = (db: DatabaseService) => Promise<{
   contents: Array<{
@@ -24,6 +28,7 @@ export const resource: Resource & { handler: ResourceHandler } = {
         uri: "steampipe://status",
         mimeType: "application/json",
         text: JSON.stringify({
+          version,
           connection_string: connectionString,
           status: isConnected ? "connected" : "disconnected"
         })
