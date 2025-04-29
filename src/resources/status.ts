@@ -26,7 +26,7 @@ export const resource: Resource & { handler: ResourceHandler } = {
         text: JSON.stringify({
           connection_string: connectionString,
           status: isConnected ? "connected" : "disconnected"
-        }, null, 2)
+        })
       }]
     };
   }

@@ -8,8 +8,8 @@ export const tool: Tool = {
   
   Queries are read-only and must use PostgreSQL syntax. 
 
-  For best performance limit the columns requested and use CTEs instead of
-  joins. Trust the search path unless sure you need to specify a schema.
+  For best performance: limit columns requested, use materialized CTEs instead
+  of joins. Trust the search path unless sure you need to specify a schema.
 
   Check available tables and columns before querying using steampipe_table_list
   and steampipe_table_show.`,
