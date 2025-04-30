@@ -2,6 +2,10 @@
 
 Unlock the power of AI-driven infrastructure analysis with [Steampipe](https://steampipe.io)! This Model Context Protocol server seamlessly connects AI assistants like Claude to your cloud infrastructure data, enabling natural language exploration and analysis of your entire cloud estate.
 
+<a href="https://glama.ai/mcp/servers/@turbot/steampipe-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@turbot/steampipe-mcp/badge" alt="steampipe-mcp MCP server" />
+</a>
+
 Steampipe MCP bridges AI assistants and your infrastructure data, allowing natural language:
 - Queries across AWS, Azure, GCP and 100+ cloud services
 - Security and compliance analysis
