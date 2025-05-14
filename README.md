@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/turbot-steampipe-mcp-badge.png)](https://mseep.ai/app/turbot-steampipe-mcp)
+
 # Steampipe Model Context Protocol (MCP) Server
 
 Unlock the power of AI-driven infrastructure analysis with [Steampipe](https://steampipe.io)! This Model Context Protocol server seamlessly connects AI assistants like Claude to your cloud infrastructure data, enabling natural language exploration and analysis of your entire cloud estate.
