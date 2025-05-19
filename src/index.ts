@@ -3,6 +3,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { DatabaseService } from "./services/database.js";
+import { configureTypeParser } from "./services/database-config.js";
 import { setupTools, tools } from "./tools/index.js";
 import { setupPromptHandlers, promptCapabilities } from "./prompts/index.js";
 import { setupResourceHandlers, resourceCapabilities } from "./resources/index.js";
@@ -55,6 +56,9 @@ export async function startServer(port: number = 27123) {
   logger.info(`Starting server on port ${port}`);
 
   try {
+    // Configure global type parsers
+    configureTypeParser();
+
     // Get database service instance (but don't connect yet)
     const db = DatabaseService.getInstance();
 

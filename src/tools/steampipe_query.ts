@@ -34,28 +34,8 @@ export const tool: Tool = {
 
     try {
       const rows = await db.executeQuery(args.sql);
-      
-      // Handle BigInt serialization by converting to Numbers or Strings
-      const processedRows = rows.map(row => {
-        const processedRow: Record<string, any> = {};
-        Object.entries(row).forEach(([key, value]) => {
-          if (typeof value === 'bigint') {
-            // Convert BigInt to a regular number if it fits within safe integer range
-            if (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER) {
-              processedRow[key] = Number(value);
-            } else {
-              // Otherwise convert to string to avoid precision loss
-              processedRow[key] = value.toString();
-            }
-          } else {
-            processedRow[key] = value;
-          }
-        });
-        return processedRow;
-      });
-
       return {
-        content: [{ type: "text", text: JSON.stringify(processedRows) }],
+        content: [{ type: "text", text: JSON.stringify(rows) }],
         isError: false
       };
     } catch (error) {
