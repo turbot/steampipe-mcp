@@ -2,8 +2,8 @@
 
 _What's new_
 
-* Add MCP version to status output
 * Return safe bigint values as int instead of string
+* Include MCP server version in status resource
 
 ## v0.1.1 [2025-04-29]
 
