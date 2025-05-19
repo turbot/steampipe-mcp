@@ -1,4 +1,11 @@
-## v0.1.1 [2024-03-19]
+## v0.1.2 [2024-05-19]
+
+_What's new_
+
+* Add MCP version to status output
+* Return safe bigint values as int instead of string
+
+## v0.1.1 [2025-04-29]
 
 _What's new_
 
