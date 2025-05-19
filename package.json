@@ -1,6 +1,6 @@
 {
   "name": "@turbot/steampipe-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Steampipe MCP server to query cloud infrastructure, SaaS, code and more with SQL using AI.",
   "license": "Apache-2.0",
   "author": "Turbot HQ, Inc",
